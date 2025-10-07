@@ -20,5 +20,7 @@ Rails.application.routes.draw do
 
   resource :unsubscribe, only: [ :show ]
 
-  root "products#index"
+  get "chat", to: "chat#index"
+
+  root "chat#index"
 end

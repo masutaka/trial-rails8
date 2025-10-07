@@ -1,0 +1,13 @@
+<h1>ActionCable Chat</h1>
+
+<section class="chat" data-controller="chat">
+  <div class="chat__messages" data-chat-target="messages" role="log" aria-live="polite"></div>
+
+  <form data-action="submit->chat#send">
+    <label class="chat__label" for="chat-message">メッセージ</label>
+    <div class="chat__form">
+      <input id="chat-message" type="text" data-chat-target="input" autocomplete="off" placeholder="メッセージを入力" required>
+      <button type="submit">送信</button>
+    </div>
+  </form>
+</section>
