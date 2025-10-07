@@ -28,7 +28,7 @@ export default class extends Controller {
     this.inputTarget.focus()
   }
 
-  appendMessage({ message, sent_at: sentAt }) {
+  appendMessage({ message, sent_at: sentAt, user_name: userName }) {
     if (!message) return
 
     const entry = document.createElement("div")
@@ -36,6 +36,11 @@ export default class extends Controller {
 
     const time = this.buildTimestamp(sentAt)
     entry.appendChild(time)
+
+    const speaker = document.createElement("span")
+    speaker.className = "chat__speaker"
+    speaker.textContent = userName || "Guest"
+    entry.appendChild(speaker)
 
     const body = document.createElement("span")
     body.className = "chat__body"

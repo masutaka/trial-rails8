@@ -86,6 +86,10 @@ section.product img {
   gap: 0.5rem;
 }
 
+.chat__speaker {
+  font-weight: 600;
+}
+
 .chat__timestamp {
   font-size: 0.75rem;
   color: #666;
