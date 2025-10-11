@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
   before_action :set_post, only: %i[ show edit update destroy ]
+  before_action :authorize_author, only: %i[ edit update destroy ]
 
   # GET /posts or /posts.json
   def index
@@ -62,6 +63,13 @@ class PostsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_post
       @post = Post.find_by!(slug: params.expect(:slug))
+    end
+
+    # Check if the current user is the author of the post
+    def authorize_author
+      unless @post.user == Current.user
+        redirect_to posts_path, alert: "You are not authorized to perform this action."
+      end
     end
 
     # Only allow a list of trusted parameters through.
