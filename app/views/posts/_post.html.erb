@@ -11,10 +11,12 @@
   </p>
 
   <% if show_body %>
-    <p>
+    <div>
       <strong>Body:</strong>
-      <%= post.body %>
-    </p>
+      <div>
+        <%= markdown(post.body) %>
+      </div>
+    </div>
   <% end %>
 
   <p>
