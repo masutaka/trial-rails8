@@ -1,11 +1,23 @@
-<h1><%= t ".title" %></h1>
+<div class="mb-8">
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-gray-900"><%= t ".title" %></h1>
+    <% if authenticated? %>
+      <%= link_to new_product_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors" do %>
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        New product
+      <% end %>
+    <% end %>
+  </div>
+</div>
 
-<%= link_to "New product", new_product_path if authenticated? %>
-
-<div id="products">
+<div id="products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   <% @products.each do |product| %>
-    <div>
-      <%= link_to product.name, product %>
-    </div>
+    <%= link_to product, class: "group" do %>
+      <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 p-6 h-full">
+        <h2 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors"><%= product.name %></h2>
+      </div>
+    <% end %>
   <% end %>
 </div>

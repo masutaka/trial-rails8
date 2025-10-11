@@ -1,54 +1,11 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
+ * Application-specific styles
  *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
+ * Most styling is now handled by Tailwind CSS.
+ * This file contains only custom styles that cannot be easily replicated with Tailwind utilities.
  */
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 1rem;
-}
-
-nav {
-  justify-content: flex-end;
-  display: flex;
-  font-size: 0.875em;
-  gap: 0.5rem;
-  max-width: 1024px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-nav a {
-  display: inline-block;
-}
-
-main {
-  max-width: 1024px;
-  margin: 0 auto;
-}
-
-.notice {
-  color: green;
-}
-
-section.product {
-  display: flex;
-  gap: 1rem;
-  flex-direction: row;
-}
-
-section.product img {
-  border-radius: 8px;
-  flex-basis: 50%;
-  max-width: 50%;
-}
-
+/* Chat component styles - keeping these as they are specific to the chat feature */
 .chat {
   display: flex;
   flex-direction: column;
@@ -97,4 +54,70 @@ section.product img {
 
 .chat__body {
   word-break: break-word;
+}
+
+/* Typography for markdown content */
+.prose h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.prose h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.prose h3 {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-top: 0.75em;
+  margin-bottom: 0.5em;
+}
+
+.prose p {
+  margin-bottom: 1em;
+}
+
+.prose ul, .prose ol {
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.prose li {
+  margin-bottom: 0.25em;
+}
+
+.prose code {
+  background-color: #f3f4f6;
+  padding: 0.125em 0.25em;
+  border-radius: 0.25em;
+  font-family: monospace;
+  font-size: 0.875em;
+}
+
+.prose pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1em;
+  border-radius: 0.5em;
+  overflow-x: auto;
+  margin-bottom: 1em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.prose blockquote {
+  border-left: 4px solid #d1d5db;
+  padding-left: 1em;
+  margin-left: 0;
+  margin-bottom: 1em;
+  color: #6b7280;
 }

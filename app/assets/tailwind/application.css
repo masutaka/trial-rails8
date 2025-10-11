@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* Import existing application styles */
+@import "../stylesheets/application.css";

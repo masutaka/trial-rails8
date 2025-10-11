@@ -20,18 +20,40 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <div class="notice"><%= notice %></div>
-    <nav>
-      <%= link_to "Home", root_path %>
-      <%= link_to "Login", new_session_path unless authenticated? %>
-      <%= button_to "Log out", session_path, method: :delete if authenticated? %>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <%= link_to "Home", root_path, class: "text-xl font-semibold text-gray-900 hover:text-gray-700" %>
+          </div>
+          <div class="flex items-center gap-4">
+            <% unless authenticated? %>
+              <%= link_to "Login", new_session_path, class: "text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100" %>
+            <% else %>
+              <%= button_to "Log out", session_path, method: :delete, class: "text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md transition-colors" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </nav>
 
-    <main>
+    <!-- Notice Message -->
+    <% if notice.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg" role="alert">
+          <%= notice %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <%= yield %>
     </main>
   </body>
