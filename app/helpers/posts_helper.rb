@@ -16,7 +16,8 @@ module PostsHelper
       disable_indented_code_blocks: true,
       fenced_code_blocks: true,
       tables: true,
-      strikethrough: true
+      strikethrough: true,
+      footnotes: true
     }
 
     renderer = Redcarpet::Render::HTML.new(options)
