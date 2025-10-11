@@ -1,14 +1,14 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user: one
+  user: alice
   title: MyString
   body: MyText
   published_at: 2025-10-11 17:04:32
   slug: MyString
 
 two:
-  user: two
+  user: bob
   title: MyString
   body: MyText
   published_at: 2025-10-11 17:04:32
