@@ -22,5 +22,7 @@ Rails.application.routes.draw do
 
   resource :unsubscribe, only: [ :show ]
 
+  resources :posts, param: :slug
+
   get "chat", to: "chat#index"
 end
