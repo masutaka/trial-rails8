@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :posts
   root "welcome#index"
 
   resource :session
@@ -22,6 +21,8 @@ Rails.application.routes.draw do
   end
 
   resource :unsubscribe, only: [ :show ]
+
+  resources :posts
 
   get "chat", to: "chat#index"
 end
