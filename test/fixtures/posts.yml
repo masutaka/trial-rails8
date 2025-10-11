@@ -5,11 +5,11 @@ one:
   title: MyString
   body: MyText
   published_at: 2025-10-11 17:04:32
-  slug: MyString
+  slug: my-string-one
 
 two:
   user: bob
-  title: MyString
-  body: MyText
+  title: MyString Two
+  body: MyText Two
   published_at: 2025-10-11 17:04:32
-  slug: MyString
+  slug: my-string-two
