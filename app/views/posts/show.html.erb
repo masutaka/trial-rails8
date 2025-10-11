@@ -1,6 +1,6 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @post %>
+<%= render @post, show_body: true %>
 
 <div>
   <% if @post.user == Current.user %>
