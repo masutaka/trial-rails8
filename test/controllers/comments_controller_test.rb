@@ -38,6 +38,11 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
+    assert_select "form" do
+      assert_select "textarea[name=?]", "comment[body]"
+    end
+    # エラーメッセージが表示されていることを確認
+    assert_select ".bg-red-50"
   end
 
   # edit アクションのテスト

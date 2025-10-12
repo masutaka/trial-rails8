@@ -77,7 +77,7 @@
     <% if authenticated? %>
       <div class="border-t border-gray-200 pt-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
-        <%= render "comments/form", comment: Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
+        <%= render "comments/form", comment: @comment || Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
       </div>
     <% else %>
       <div class="border-t border-gray-200 pt-6">
