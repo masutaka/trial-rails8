@@ -14,11 +14,10 @@
 
 <div id="posts" class="space-y-6">
   <% @posts.each do |post| %>
-    <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 p-6">
-      <%= render post, show_body: false %>
-      <div class="mt-4">
-        <%= link_to "Show this post", post, class: "inline-flex items-center text-blue-600 hover:text-blue-800 font-medium" %>
+    <%= link_to post, class: "block" do %>
+      <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 p-6 cursor-pointer">
+        <%= render post, show_body: false %>
       </div>
-    </div>
+    <% end %>
   <% end %>
 </div>
