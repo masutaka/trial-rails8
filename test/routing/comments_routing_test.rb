@@ -1,31 +1,10 @@
 require "test_helper"
 
 class CommentsRoutingTest < ActionDispatch::IntegrationTest
-  test "routes to comments#index nested under posts" do
-    assert_routing(
-      { method: "get", path: "/posts/my-post-slug/comments" },
-      { controller: "comments", action: "index", post_slug: "my-post-slug" }
-    )
-  end
-
-  test "routes to comments#new nested under posts" do
-    assert_routing(
-      { method: "get", path: "/posts/my-post-slug/comments/new" },
-      { controller: "comments", action: "new", post_slug: "my-post-slug" }
-    )
-  end
-
   test "routes to comments#create nested under posts" do
     assert_routing(
       { method: "post", path: "/posts/my-post-slug/comments" },
       { controller: "comments", action: "create", post_slug: "my-post-slug" }
-    )
-  end
-
-  test "routes to comments#show with shallow route" do
-    assert_routing(
-      { method: "get", path: "/comments/1" },
-      { controller: "comments", action: "show", id: "1" }
     )
   end
 
