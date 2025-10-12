@@ -167,7 +167,7 @@ Issue #4 では「ルーティングのテストを書いてから、ルーテ�
 
 3. **Comment モデルのマイグレーション作成**
    ```bash
-   bin/rails generate model Comment post:references user:references body:text
+   bin/rails generate model Comment post:references{null:false} user:references{null:false} body:text{null:false}
    ```
 
 4. **モデルテストの作成**
@@ -181,8 +181,8 @@ Issue #4 では「ルーティングのテストを書いてから、ルーテ�
    - テストが通ることを確認
 
 6. **Post モデルの更新**
-   - `has_many :comments` の追加
-   - 関連テストの追加
+   - `has_many :comments, dependent: :destroy` の追加
+   - 関連テストの追加（記事削除時にコメントも削除されることを確認）
 
 ### Phase 3: コントローラー（TDD）
 
