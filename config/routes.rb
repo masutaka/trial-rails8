@@ -22,7 +22,9 @@ Rails.application.routes.draw do
 
   resource :unsubscribe, only: [ :show ]
 
-  resources :posts, param: :slug
+  resources :posts, param: :slug do
+    resources :comments, shallow: true
+  end
 
   get "chat", to: "chat#index"
 end
