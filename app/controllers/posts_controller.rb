@@ -30,7 +30,7 @@ class PostsController < ApplicationController
     @post.user = Current.user
 
     if @post.save
-      redirect_to @post, notice: "Post was successfully created."
+      redirect_to @post, notice: "Post was successfully created.", status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
