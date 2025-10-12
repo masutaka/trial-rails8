@@ -3,6 +3,37 @@
     <%= render @post, show_body: true %>
   </div>
 
+  <% if @previous_post || @next_post %>
+    <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
+      <div class="flex-1">
+        <% if @previous_post %>
+          <%= link_to post_path(@previous_post), class: "group block p-4 rounded-lg hover:bg-gray-50 transition-colors" do %>
+            <div class="text-sm text-gray-500 mb-1 flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              前の記事
+            </div>
+            <div class="text-gray-900 font-medium group-hover:text-blue-600"><%= @previous_post.title %></div>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="flex-1 text-right">
+        <% if @next_post %>
+          <%= link_to post_path(@next_post), class: "group block p-4 rounded-lg hover:bg-gray-50 transition-colors" do %>
+            <div class="text-sm text-gray-500 mb-1 flex items-center justify-end">
+              次の記事
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+            <div class="text-gray-900 font-medium group-hover:text-blue-600"><%= @next_post.title %></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <div class="flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <%= link_to posts_path, class: "inline-flex items-center text-gray-600 hover:text-gray-900 font-medium" do %>

@@ -11,6 +11,8 @@ class PostsController < ApplicationController
   # GET /posts/1 or /posts/1.json
   def show
     resume_session
+    @previous_post = @post.previous_post
+    @next_post = @post.next_post
   end
 
   # GET /posts/new
