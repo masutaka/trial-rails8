@@ -1,0 +1,56 @@
+class CommentsController < ApplicationController
+  before_action :set_comment, only: %i[ edit update destroy ]
+  before_action :authorize_owner, only: %i[ edit update destroy ]
+
+  # POST /posts/:post_slug/comments
+  def create
+    @post = Post.find_by!(slug: params[:post_slug])
+    @comment = @post.comments.build(comment_params)
+    @comment.user = Current.user
+
+    if @comment.save
+      redirect_to post_url(@post), notice: "Comment was successfully created."
+    else
+      render "posts/show", status: :unprocessable_entity
+    end
+  end
+
+  # GET /comments/:id/edit
+  def edit
+  end
+
+  # PATCH/PUT /comments/:id
+  def update
+    if @comment.update(comment_params)
+      redirect_to post_url(@comment.post), notice: "Comment was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /comments/:id
+  def destroy
+    @post = @comment.post
+    @comment.destroy!
+
+    redirect_to post_url(@post), notice: "Comment was successfully destroyed.", status: :see_other
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_comment
+      @comment = Comment.find(params[:id])
+    end
+
+    # Check if the current user is the owner of the comment
+    def authorize_owner
+      unless @comment.user == Current.user
+        redirect_to root_url, alert: "You are not authorized to perform this action."
+      end
+    end
+
+    # Only allow a list of trusted parameters through.
+    def comment_params
+      params.expect(comment: [ :body ])
+    end
+end

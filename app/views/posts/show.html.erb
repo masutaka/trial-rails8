@@ -45,7 +45,7 @@
   <% end %>
 
   <% if @post.user == Current.user %>
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between mb-6">
       <div>
         <%= link_to "Edit this post", edit_post_path(@post), class: "inline-flex items-center text-blue-600 hover:text-blue-800 font-medium" %>
       </div>
@@ -54,4 +54,39 @@
       </div>
     </div>
   <% end %>
+
+  <!-- コメントセクション -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">
+      コメント
+      <span class="text-sm font-normal text-gray-500">(<%= @post.comments.count %>)</span>
+    </h2>
+
+    <!-- コメント一覧 -->
+    <div class="mb-6">
+      <% if @post.comments.any? %>
+        <div class="space-y-2">
+          <%= render @post.comments.order(created_at: :asc) %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-sm py-4">まだコメントがありません。最初のコメントを投稿しましょう！</p>
+      <% end %>
+    </div>
+
+    <!-- 新規コメントフォーム -->
+    <% if authenticated? %>
+      <div class="border-t border-gray-200 pt-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
+        <%= render "comments/form", comment: @comment || Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
+      </div>
+    <% else %>
+      <div class="border-t border-gray-200 pt-6">
+        <p class="text-gray-600 text-sm">
+          コメントを投稿するには
+          <%= link_to "ログイン", new_session_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
+          してください。
+        </p>
+      </div>
+    <% end %>
+  </div>
 </div>

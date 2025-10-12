@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  post: one
+  user: alice
+  body: これは最初のコメントです。
+
+two:
+  post: one
+  user: bob
+  body: これは2番目のコメントです。とても興味深い記事ですね。
+
+three:
+  post: two
+  user: alice
+  body: この記事についてのコメントです。
