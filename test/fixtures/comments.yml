@@ -2,10 +2,15 @@
 
 one:
   post: one
-  user: one
-  body: MyText
+  user: alice
+  body: これは最初のコメントです。
 
 two:
+  post: one
+  user: bob
+  body: これは2番目のコメントです。とても興味深い記事ですね。
+
+three:
   post: two
-  user: two
-  body: MyText
+  user: alice
+  body: この記事についてのコメントです。
