@@ -1,0 +1,19 @@
+name: CodeQL Schedule
+
+on:
+  schedule:
+    - cron: "00 10 * * 5" # every friday 19:00 JST
+
+jobs:
+  codeql:
+    strategy:
+      matrix:
+        language: [actions, ruby]
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      security-events: write
+    uses: route06/actions/.github/workflows/codeql_core.yml@3bcea5bf834ff2e0e6c912c1167fcc1fe05e49c2 # v2.7.0
+    with:
+      language: ${{ matrix.language }}
