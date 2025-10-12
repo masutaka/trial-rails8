@@ -1,0 +1,33 @@
+<div class="border-b border-gray-200 py-4 last:border-b-0">
+  <div class="flex items-start justify-between mb-2">
+    <div class="flex items-center space-x-2">
+      <div class="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
+        <span class="text-sm font-medium text-blue-600">
+          <%= comment.user.email_address[0].upcase %>
+        </span>
+      </div>
+      <div>
+        <div class="text-sm font-medium text-gray-900">
+          <%= comment.user.email_address %>
+        </div>
+        <div class="text-xs text-gray-500">
+          <%= comment.created_at.strftime("%Y年%m月%d日 %H:%M") %>
+          <% if comment.updated_at != comment.created_at %>
+            <span class="ml-1">(編集済み)</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if comment.user == Current.user %>
+      <div class="flex items-center space-x-2">
+        <%= link_to "編集", edit_comment_path(comment), class: "text-sm text-blue-600 hover:text-blue-800" %>
+        <%= button_to "削除", comment_path(comment), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-sm text-red-600 hover:text-red-800" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="text-gray-800 whitespace-pre-wrap ml-10">
+    <%= comment.body %>
+  </div>
+</div>

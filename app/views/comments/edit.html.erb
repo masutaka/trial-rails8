@@ -1,29 +1,20 @@
-<h1>Edit Comment</h1>
-
-<%= form_with(model: @comment, url: comment_path(@comment)) do |form| %>
-  <% if @comment.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(@comment.errors.count, "error") %> prohibited this comment from being saved:</h2>
-      <ul>
-        <% @comment.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+<div class="max-w-4xl mx-auto">
+  <nav class="mb-4">
+    <div class="flex items-center text-sm text-gray-600">
+      <%= link_to "Home", root_path, class: "hover:text-gray-900 font-medium" %>
+      <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <%= link_to "Post", post_path(@comment.post), class: "hover:text-gray-900 font-medium" %>
+      <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <span class="text-gray-900">コメント編集</span>
     </div>
-  <% end %>
+  </nav>
 
-  <div>
-    <%= form.label :body, style: "display: block" %>
-    <%= form.text_area :body, rows: 5 %>
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">コメント編集</h1>
+    <%= render "form", comment: @comment, url: comment_path(@comment), submit_label: "更新" %>
   </div>
-
-  <div>
-    <%= form.submit %>
-  </div>
-<% end %>
-
-<br>
-
-<div>
-  <%= link_to "Back to post", post_path(@comment.post) %>
 </div>

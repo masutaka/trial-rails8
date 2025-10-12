@@ -1,0 +1,24 @@
+<%= form_with(model: comment, url: url) do |form| %>
+  <% if comment.errors.any? %>
+    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+      <h3 class="text-sm font-medium text-red-800 mb-2">
+        <%= pluralize(comment.errors.count, "error") %> prohibited this comment from being saved:
+      </h3>
+      <ul class="list-disc list-inside text-sm text-red-700">
+        <% comment.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :body, "コメント", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= form.text_area :body, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "コメントを入力してください" %>
+  </div>
+
+  <div class="flex items-center justify-end space-x-3">
+    <%= link_to "キャンセル", post_path(comment.post || @post), class: "px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900" %>
+    <%= form.submit submit_label, class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors" %>
+  </div>
+<% end %>
