@@ -39,4 +39,15 @@ class PostTest < ActiveSupport::TestCase
     assert_not_includes published_posts, posts(:draft)
     assert_not_includes published_posts, posts(:ready_to_publish)
   end
+
+  # scheduled スコープのテスト
+  test "scheduled scope should return unpublished posts with future published_at" do
+    scheduled_posts = Post.scheduled
+
+    assert_includes scheduled_posts, posts(:scheduled)
+    assert_not_includes scheduled_posts, posts(:one)
+    assert_not_includes scheduled_posts, posts(:two)
+    assert_not_includes scheduled_posts, posts(:draft)
+    assert_not_includes scheduled_posts, posts(:ready_to_publish)
+  end
 end

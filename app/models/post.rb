@@ -3,6 +3,7 @@ class Post < ApplicationRecord
   has_many :comments, dependent: :destroy
 
   scope :published, -> { where(published: true) }
+  scope :scheduled, -> { where(published: false).where("published_at > ?", Time.current) }
 
   def to_param
     slug
