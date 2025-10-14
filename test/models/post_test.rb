@@ -126,4 +126,43 @@ class PostTest < ActiveSupport::TestCase
       assert previous.published
     end
   end
+
+  # next_post メソッドのテスト
+  test "next_post should return next post from author's posts when current_user is the author" do
+    alice = users(:alice)
+    post = posts(:alice_old_post)
+
+    # Alice's posts から次の記事を取得
+    next_post = post.next_post(alice)
+
+    # next_post は published_at が現在の記事より後の記事を返す（自分の記事のみ）
+    assert_not_nil next_post
+    assert_equal alice, next_post.user
+    assert_equal posts(:one), next_post
+  end
+
+  test "next_post should return next post from published posts only when current_user is not the author" do
+    bob = users(:bob)
+    post = posts(:alice_old_post)
+
+    # Bob's perspective では公開記事のみが対象
+    next_post = post.next_post(bob)
+
+    # next_post は公開記事の中から次の記事を返す
+    if next_post
+      assert next_post.published
+    end
+  end
+
+  test "next_post should return next post from published posts only when current_user is nil" do
+    post = posts(:alice_old_post)
+
+    # 未認証ユーザーは公開記事のみが対象
+    next_post = post.next_post(nil)
+
+    # next_post は公開記事の中から次の記事を返す
+    if next_post
+      assert next_post.published
+    end
+  end
 end
