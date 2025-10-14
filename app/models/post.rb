@@ -20,30 +20,28 @@ class Post < ApplicationRecord
   end
 
   def previous_post(current_user = nil)
-    scope = if current_user && user == current_user
-              # 作成者が自分の記事を閲覧中: 自分の記事（Draft含む）から前後を取得
-              Post.where(user: current_user)
-    else
-              # それ以外: 公開記事のみから前後を取得
-              Post.published
-    end
-
-    scope.where("published_at < ?", published_at)
-         .order(published_at: :desc)
-         .first
+    navigation_scope(current_user)
+      .where("published_at < ?", published_at)
+      .order(published_at: :desc)
+      .first
   end
 
   def next_post(current_user = nil)
-    scope = if current_user && user == current_user
-              # 作成者が自分の記事を閲覧中: 自分の記事（Draft含む）から前後を取得
-              Post.where(user: current_user)
-    else
-              # それ以外: 公開記事のみから前後を取得
-              Post.published
-    end
+    navigation_scope(current_user)
+      .where("published_at > ?", published_at)
+      .order(published_at: :asc)
+      .first
+  end
 
-    scope.where("published_at > ?", published_at)
-         .order(published_at: :asc)
-         .first
+  private
+
+  def navigation_scope(current_user)
+    if current_user && user == current_user
+      # 作成者が自分の記事を閲覧中: 自分の記事（Draft含む）から前後を取得
+      Post.where(user: current_user)
+    else
+      # それ以外: 公開記事のみから前後を取得
+      Post.published
+    end
   end
 end
