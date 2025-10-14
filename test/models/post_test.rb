@@ -80,4 +80,12 @@ class PostTest < ActiveSupport::TestCase
     assert_not posts(:draft).scheduled?
     assert_not posts(:ready_to_publish).scheduled?
   end
+
+  # draft? メソッドのテスト
+  test "draft? should return true for draft posts" do
+    assert posts(:draft).draft?
+    assert_not posts(:one).draft?
+    assert_not posts(:scheduled).draft?
+    assert_not posts(:ready_to_publish).draft?
+  end
 end

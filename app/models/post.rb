@@ -15,6 +15,10 @@ class Post < ApplicationRecord
     !published && published_at.present? && published_at > Time.current
   end
 
+  def draft?
+    !published && published_at.nil?
+  end
+
   def previous_post
     Post.where("published_at < ?", published_at)
         .order(published_at: :desc)
