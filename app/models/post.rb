@@ -2,6 +2,8 @@ class Post < ApplicationRecord
   belongs_to :user
   has_many :comments, dependent: :destroy
 
+  scope :published, -> { where(published: true) }
+
   def to_param
     slug
   end

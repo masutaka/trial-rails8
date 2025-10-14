@@ -28,4 +28,15 @@ class PostTest < ActiveSupport::TestCase
       assert_nil Comment.find_by(id: comment_id), "Comment #{comment_id} should be destroyed"
     end
   end
+
+  # published スコープのテスト
+  test "published scope should return only published posts" do
+    published_posts = Post.published
+
+    assert_includes published_posts, posts(:one)
+    assert_includes published_posts, posts(:two)
+    assert_not_includes published_posts, posts(:scheduled)
+    assert_not_includes published_posts, posts(:draft)
+    assert_not_includes published_posts, posts(:ready_to_publish)
+  end
 end

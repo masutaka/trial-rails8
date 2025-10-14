@@ -6,6 +6,7 @@ one:
   body: MyText
   published_at: 2025-10-11 17:04:32
   slug: my-string-one
+  published: true
 
 two:
   user: bob
@@ -13,3 +14,28 @@ two:
   body: MyText Two
   published_at: 2025-10-11 17:04:32
   slug: my-string-two
+  published: true
+
+scheduled:
+  user: alice
+  title: Scheduled Post
+  body: This is a scheduled post
+  published_at: <%= 1.day.from_now %>
+  slug: scheduled-post
+  published: false
+
+draft:
+  user: alice
+  title: Draft Post
+  body: This is a draft post
+  published_at: null
+  slug: draft-post
+  published: false
+
+ready_to_publish:
+  user: bob
+  title: Ready to Publish
+  body: This post is ready to publish
+  published_at: <%= 1.day.ago %>
+  slug: ready-to-publish
+  published: false
