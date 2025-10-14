@@ -72,4 +72,12 @@ class PostTest < ActiveSupport::TestCase
     assert_not_includes ready_posts, posts(:scheduled)
     assert_not_includes ready_posts, posts(:draft)
   end
+
+  # scheduled? メソッドのテスト
+  test "scheduled? should return true for scheduled posts" do
+    assert posts(:scheduled).scheduled?
+    assert_not posts(:one).scheduled?
+    assert_not posts(:draft).scheduled?
+    assert_not posts(:ready_to_publish).scheduled?
+  end
 end

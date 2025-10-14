@@ -11,6 +11,10 @@ class Post < ApplicationRecord
     slug
   end
 
+  def scheduled?
+    !published && published_at.present? && published_at > Time.current
+  end
+
   def previous_post
     Post.where("published_at < ?", published_at)
         .order(published_at: :desc)
