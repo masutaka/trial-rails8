@@ -1,10 +1,18 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+alice_old_post:
+  user: alice
+  title: Alice Old Post
+  body: This is Alice's old post
+  published_at: <%= 3.days.ago %>
+  slug: alice-old-post
+  published: true
+
 one:
   user: alice
   title: MyString
   body: MyText
-  published_at: 2025-10-11 17:04:32
+  published_at: <%= 2.days.ago %>
   slug: my-string-one
   published: true
 
@@ -12,7 +20,7 @@ two:
   user: bob
   title: MyString Two
   body: MyText Two
-  published_at: 2025-10-11 17:04:32
+  published_at: <%= 1.day.ago %>
   slug: my-string-two
   published: true
 
@@ -36,6 +44,6 @@ ready_to_publish:
   user: bob
   title: Ready to Publish
   body: This post is ready to publish
-  published_at: <%= 1.day.ago %>
+  published_at: <%= 2.days.ago %>
   slug: ready-to-publish
   published: false

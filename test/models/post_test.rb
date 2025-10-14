@@ -88,4 +88,42 @@ class PostTest < ActiveSupport::TestCase
     assert_not posts(:scheduled).draft?
     assert_not posts(:ready_to_publish).draft?
   end
+
+  # previous_post メソッドのテスト
+  test "previous_post should return previous post from author's posts when current_user is the author" do
+    alice = users(:alice)
+    post = posts(:one)
+
+    # Alice's posts には one, scheduled, draft が含まれる（published_at の順）
+    previous = post.previous_post(alice)
+
+    # previous_post は published_at が現在の記事より前の記事を返す（自分の記事のみ）
+    assert_not_nil previous
+    assert_equal alice, previous.user
+  end
+
+  test "previous_post should return previous post from published posts only when current_user is not the author" do
+    bob = users(:bob)
+    post = posts(:one)
+
+    # Bob's perspective では公開記事のみが対象
+    previous = post.previous_post(bob)
+
+    # previous_post は公開記事の中から前の記事を返す
+    if previous
+      assert previous.published
+    end
+  end
+
+  test "previous_post should return previous post from published posts only when current_user is nil" do
+    post = posts(:one)
+
+    # 未認証ユーザーは公開記事のみが対象
+    previous = post.previous_post(nil)
+
+    # previous_post は公開記事の中から前の記事を返す
+    if previous
+      assert previous.published
+    end
+  end
 end

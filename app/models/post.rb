@@ -19,10 +19,18 @@ class Post < ApplicationRecord
     !published && published_at.nil?
   end
 
-  def previous_post
-    Post.where("published_at < ?", published_at)
-        .order(published_at: :desc)
-        .first
+  def previous_post(current_user = nil)
+    scope = if current_user && user == current_user
+              # 作成者が自分の記事を閲覧中: 自分の記事（Draft含む）から前後を取得
+              Post.where(user: current_user)
+    else
+              # それ以外: 公開記事のみから前後を取得
+              Post.published
+    end
+
+    scope.where("published_at < ?", published_at)
+         .order(published_at: :desc)
+         .first
   end
 
   def next_post
