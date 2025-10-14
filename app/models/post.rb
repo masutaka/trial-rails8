@@ -4,6 +4,7 @@ class Post < ApplicationRecord
 
   scope :published, -> { where(published: true) }
   scope :scheduled, -> { where(published: false).where("published_at > ?", Time.current) }
+  scope :draft, -> { where(published: false, published_at: nil) }
 
   def to_param
     slug
