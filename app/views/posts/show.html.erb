@@ -102,17 +102,25 @@
     </div>
 
     <!-- 新規コメントフォーム -->
-    <% if authenticated? %>
-      <div class="border-t border-gray-200 pt-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
-        <%= render "comments/form", comment: @comment || Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
-      </div>
+    <% if @post.published %>
+      <% if authenticated? %>
+        <div class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
+          <%= render "comments/form", comment: @comment || Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
+        </div>
+      <% else %>
+        <div class="border-t border-gray-200 pt-6">
+          <p class="text-gray-600 text-sm">
+            コメントを投稿するには
+            <%= link_to "ログイン", new_session_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
+            してください。
+          </p>
+        </div>
+      <% end %>
     <% else %>
       <div class="border-t border-gray-200 pt-6">
         <p class="text-gray-600 text-sm">
-          コメントを投稿するには
-          <%= link_to "ログイン", new_session_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
-          してください。
+          この記事は未公開のため、コメントを投稿できません。
         </p>
       </div>
     <% end %>
