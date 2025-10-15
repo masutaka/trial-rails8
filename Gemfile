@@ -63,6 +63,9 @@ group :development do
 
   # Annotate models and routes with schema information
   gem "annotaterb"
+
+  # Mission Control for Active Job monitoring
+  gem "mission_control-jobs"
 end
 
 group :test do
