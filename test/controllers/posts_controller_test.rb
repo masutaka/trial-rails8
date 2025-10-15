@@ -10,9 +10,29 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post session_url, params: { email_address: user.email_address, password: "password" }
   end
 
-  test "should get index" do
+  test "index should show only published posts for unauthenticated users" do
     get posts_url
     assert_response :success
+    # 公開記事のみが表示される（alice_old_post, one, two）
+    assert_select "#posts > a", count: 3
+  end
+
+  test "index should show published posts and own unpublished posts for authenticated users" do
+    log_in_as(@alice)
+    get posts_url
+    assert_response :success
+    # 公開記事 + Alice の未公開記事（alice_old_post, one, two, scheduled, draft）
+    assert_select "#posts > a", count: 5
+  end
+
+  test "index should not show other users unpublished posts" do
+    bob = users(:bob)
+    log_in_as(bob)
+    get posts_url
+    assert_response :success
+    # 公開記事 + Bob の未公開記事（alice_old_post, one, two, ready_to_publish）
+    # Alice の scheduled と draft は表示されない
+    assert_select "#posts > a", count: 4
   end
 
   test "should get new" do
