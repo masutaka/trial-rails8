@@ -27,4 +27,7 @@ Rails.application.routes.draw do
   end
 
   get "chat", to: "chat#index"
+
+  # Mission Control - Jobs dashboard (development only)
+  mount MissionControl::Jobs::Engine, at: "/jobs" if Rails.env.development?
 end
