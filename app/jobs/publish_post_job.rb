@@ -2,7 +2,8 @@ class PublishPostJob < ApplicationJob
   queue_as :default
 
   def perform(post_id, scheduled_at)
-    post = Post.find(post_id)
+    post = Post.find_by(id: post_id)
+    return unless post  # 記事が削除されている場合は静かに終了
 
     # 既に公開済みの場合はスキップ（冪等性）
     return if post.published
