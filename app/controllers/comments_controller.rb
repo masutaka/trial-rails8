@@ -5,7 +5,7 @@ class CommentsController < ApplicationController
 
   # POST /posts/:post_slug/comments
   def create
-    @post = Post.find_by!(slug: params[:post_slug])
+    # @post is already loaded by ensure_post_published
     @comment = @post.comments.build(comment_params)
     @comment.user = Current.user
 
@@ -53,9 +53,9 @@ class CommentsController < ApplicationController
     # Ensure the post is published before allowing comments
     def ensure_post_published
       @post = Post.find_by!(slug: params[:post_slug])
-      unless @post.published
-        redirect_to post_url(@post), alert: "この記事は未公開のため、コメントを投稿できません。"
-      end
+      return if @post.published
+
+      redirect_to post_url(@post), alert: "この記事は未公開のため、コメントを投稿できません。"
     end
 
     # Only allow a list of trusted parameters through.
