@@ -2,6 +2,7 @@ class PostsController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :set_post, only: %i[ show edit update destroy ]
   before_action :authorize_author, only: %i[ edit update destroy ]
+  before_action :normalize_published_at, only: %i[ create update ]
 
   # GET /posts
   def index
@@ -65,6 +66,15 @@ class PostsController < ApplicationController
       unless @post.user == Current.user
         redirect_to posts_path, alert: "You are not authorized to perform this action."
       end
+    end
+
+    # Normalize published_at parameter to application timezone
+    def normalize_published_at
+      return unless params.dig(:post, :published_at).present?
+
+      # datetime-local フィールドから送られてきた値を、アプリケーションのタイムゾーンで解釈
+      published_at_param = params[:post][:published_at]
+      params[:post][:published_at] = Time.zone.parse(published_at_param)
     end
 
     # Only allow a list of trusted parameters through.
