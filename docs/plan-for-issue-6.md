@@ -55,11 +55,17 @@
 - `scheduled`: 予約投稿（未公開で`published_at`が未来）
 - `draft`: 下書き（未公開で`published_at`が`nil`）
 - `ready_to_publish`: 公開可能（未公開で`published_at`が過去または現在）
+- `visible_to(user)`: ユーザーに表示可能な記事（ビジネスロジックをモデル層に集約）
+  - `user`が存在する場合: 公開記事 + 自分の未公開記事
+  - `user`が`nil`の場合: 公開記事のみ
 
 #### メソッド
 
 - `scheduled?`: 予約投稿かどうかを判定
 - `draft?`: 下書きかどうかを判定
+- `viewable_by?(user)`: 指定されたユーザーが記事を閲覧可能かを判定
+  - 公開記事: 誰でも閲覧可能
+  - 未公開記事: 作成者のみ閲覧可能
 - `previous_post(current_user)` / `next_post(current_user)`: 前後の記事を取得
   - **自分の記事を閲覧中**（`user == current_user`）: 自分の記事（公開・未公開含む）を対象
   - **他人の記事または未認証**: 公開記事のみを対象
@@ -97,8 +103,9 @@
 
 #### showアクション
 
-- **公開記事**: 誰でも閲覧可能
-- **未公開記事**: 作成者のみ閲覧可能、それ以外は404（`raise ActiveRecord::RecordNotFound`）
+- **アクセス制御**: `viewable_by?(user)` メソッドを使用
+  - 公開記事: 誰でも閲覧可能
+  - 未公開記事: 作成者のみ閲覧可能、それ以外は404（`raise ActiveRecord::RecordNotFound`）
 - `previous_post` / `next_post`の取得
   - `Current.user`を引数として渡す
   - 作成者が自分の記事を閲覧中: 自分の記事（Draft含む）から前後を取得
@@ -180,17 +187,32 @@ t-wada氏の推奨するTDDアプローチに従い、「テストを書く → 
    - `ready_to_publish` スコープを実装
    - テストが通ることを確認
 
-5. **`scheduled?` メソッド（TDD）**
+5. **`visible_to(user)` スコープ（TDD）**
+   - `test/models/post_test.rb` に `visible_to` スコープのテストを追加
+     - ユーザーが存在する場合: 公開記事 + 自分の未公開記事が返される
+     - ユーザーが`nil`の場合: 公開記事のみが返される
+     - 他人の未公開記事は含まれない
+   - `visible_to` スコープを実装
+   - テストが通ることを確認
+
+6. **`scheduled?` メソッド（TDD）**
    - `test/models/post_test.rb` に `scheduled?` メソッドのテストを追加
    - `scheduled?` メソッドを実装
    - テストが通ることを確認
 
-6. **`draft?` メソッド（TDD）**
+7. **`draft?` メソッド（TDD）**
    - `test/models/post_test.rb` に `draft?` メソッドのテストを追加
    - `draft?` メソッドを実装
    - テストが通ることを確認
 
-7. **`previous_post` / `next_post` メソッド（TDD）**
+8. **`viewable_by?(user)` メソッド（TDD）**
+   - `test/models/post_test.rb` に `viewable_by?` メソッドのテストを追加
+     - 公開記事: 誰でも閲覧可能（userが`nil`でも`true`）
+     - 未公開記事: 作成者のみ閲覧可能（作成者なら`true`、それ以外は`false`）
+   - `viewable_by?` メソッドを実装
+   - テストが通ることを確認
+
+9. **`previous_post` / `next_post` メソッド（TDD）**
    - `test/models/post_test.rb` に `previous_post` / `next_post` のテストを追加
      - 作成者が自分の記事を閲覧中: 自分の記事（Draft含む）から前後を取得
      - それ以外: 公開記事のみから前後を取得
@@ -199,7 +221,7 @@ t-wada氏の推奨するTDDアプローチに従い、「テストを書く → 
      - 作成者判定ロジック
    - テストが通ることを確認
 
-8. **公開ジョブスケジュールコールバック（TDD）**
+10. **公開ジョブスケジュールコールバック（TDD）**
    - `test/models/post_test.rb` に公開ジョブスケジュールのテストを追加
      - 保存時にジョブがエンキューされること
      - `published_at` が未来の場合は遅延実行されること
@@ -230,12 +252,10 @@ t-wada氏の推奨するTDDアプローチに従い、「テストを書く → 
 
 1. **indexアクション（TDD）**
    - `test/controllers/posts_controller_test.rb` に indexアクションのテストを追加
-     - 未認証ユーザーは公開記事のみ表示されること
-     - ログインユーザーは公開記事と自分の未公開記事が表示されること
-     - 他人の未公開記事は表示されないこと
+     - `test "should get index"`: HTTPレスポンスが成功すること
    - `index` アクションを実装
-     - ログインユーザー: 公開記事 + 自分の未公開記事
-     - 未認証ユーザー: 公開記事のみ
+     - 認証状態による表示切り替えは `Post.visible_to(Current.user)` スコープを使用
+     - ビジネスロジックをモデル層に委譲し、コントローラーは薄く保つ
    - テストが通ることを確認
 
 2. **showアクション（TDD）**
@@ -244,12 +264,11 @@ t-wada氏の推奨するTDDアプローチに従い、「テストを書く → 
      - 他のユーザーは未公開記事にアクセスすると404が返されること
      - 未認証ユーザーは未公開記事にアクセスすると404が返されること
      - 公開記事は誰でも閲覧できること
-     - **previous_post / next_post のテスト**
-       - 作成者が自分の記事を閲覧中: Draft含む自分の記事から前後を取得
-       - それ以外: 公開記事のみから前後を取得
    - `show` アクションを実装
-     - 未公開記事へのアクセス制御（404を返す）
-     - **previous_post / next_post に`Current.user`を渡す**
+     - アクセス制御: `@post.viewable_by?(Current.user)` を使用
+     - 閲覧不可の場合は `raise ActiveRecord::RecordNotFound`
+     - `previous_post` / `next_post` に `Current.user` を渡す
+     - ビジネスロジックをモデル層に委譲し、コントローラーは薄く保つ
    - テストが通ることを確認
 
 3. **createアクション（TDD）**
@@ -296,8 +315,8 @@ TDDアプローチに従い、以下の順序でテストを記述します：
 
 ### 1. モデルテスト
 
-- スコープのテスト（`published`, `scheduled`, `draft`, `ready_to_publish`）
-- メソッドのテスト（`scheduled?`, `draft?`）
+- スコープのテスト（`published`, `scheduled`, `draft`, `ready_to_publish`, `visible_to`）
+- メソッドのテスト（`scheduled?`, `draft?`, `viewable_by?`）
 - previous_post / next_post のテスト（作成者判定による振る舞いの違い）
 - 公開ジョブスケジュールコールバックのテスト
   - ジョブのエンキュー確認
@@ -309,10 +328,9 @@ TDDアプローチに従い、以下の順序でテストを記述します：
 
 ### 3. コントローラーテスト
 
-- indexアクション: 認証状態による表示切り替え
-- showアクション:
-  - アクセス制御（404処理）
-  - previous_post / next_post の動作（作成者と非作成者で異なる）
+- indexアクション: レスポンスが成功すること
+- showアクション: アクセス制御（404が返されること）
+  - ビジネスロジック（閲覧可否の判定）は `viewable_by?` のモデルテストで担保
 - createアクション: 正常系
 - edit/update/destroyアクション:
   - 作成者は編集・削除できること
