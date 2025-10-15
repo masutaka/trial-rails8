@@ -22,12 +22,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create post" do
-    log_in_as(@alice)
-    assert_difference("Post.count") do
-      post posts_url, params: { post: { body: @post.body, published_at: @post.published_at, slug: @post.slug, title: @post.title } }
-    end
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      log_in_as(@alice)
+      assert_difference("Post.count") do
+        post posts_url, params: { post: { body: @post.body, published_at: @post.published_at, slug: @post.slug, title: @post.title } }
+      end
 
-    assert_redirected_to post_url(Post.last)
+      assert_redirected_to post_url(Post.last)
+    end
   end
 
   test "should show post" do
@@ -42,9 +44,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update post" do
-    log_in_as(@alice)
-    patch post_url(@post), params: { post: { body: @post.body, published_at: @post.published_at, slug: @post.slug, title: @post.title } }
-    assert_redirected_to post_url(@post)
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      log_in_as(@alice)
+      patch post_url(@post), params: { post: { body: @post.body, published_at: @post.published_at, slug: @post.slug, title: @post.title } }
+      assert_redirected_to post_url(@post)
+    end
   end
 
   test "should destroy post" do
