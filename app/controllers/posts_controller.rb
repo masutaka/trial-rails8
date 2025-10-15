@@ -12,8 +12,9 @@ class PostsController < ApplicationController
   # GET /posts/1
   def show
     resume_session
-    @previous_post = @post.previous_post
-    @next_post = @post.next_post
+    raise ActiveRecord::RecordNotFound unless @post.viewable_by?(Current.user)
+    @previous_post = @post.previous_post(Current.user)
+    @next_post = @post.next_post(Current.user)
   end
 
   # GET /posts/new

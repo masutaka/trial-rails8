@@ -52,9 +52,30 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should show post" do
+  test "should show published post for unauthenticated users" do
     get post_url(@post)
     assert_response :success
+  end
+
+  test "author can view own unpublished post" do
+    scheduled_post = posts(:scheduled)
+    log_in_as(@alice)
+    get post_url(scheduled_post)
+    assert_response :success
+  end
+
+  test "other users cannot view unpublished post" do
+    scheduled_post = posts(:scheduled)
+    bob = users(:bob)
+    log_in_as(bob)
+    get post_url(scheduled_post)
+    assert_response :not_found
+  end
+
+  test "unauthenticated users cannot view unpublished post" do
+    scheduled_post = posts(:scheduled)
+    get post_url(scheduled_post)
+    assert_response :not_found
   end
 
   test "should get edit" do
