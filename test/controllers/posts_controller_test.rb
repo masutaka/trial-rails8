@@ -100,4 +100,39 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to posts_url
   end
+
+  test "author can edit own unpublished post" do
+    scheduled_post = posts(:scheduled)
+    log_in_as(@alice)
+    get edit_post_url(scheduled_post)
+    assert_response :success
+  end
+
+  test "other users cannot edit post" do
+    bob = users(:bob)
+    log_in_as(bob)
+    get edit_post_url(@post)
+    assert_redirected_to posts_url
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
+  end
+
+  test "other users cannot update post" do
+    bob = users(:bob)
+    log_in_as(bob)
+    patch post_url(@post), params: { post: { title: "Updated by Bob" } }
+    assert_redirected_to posts_url
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    @post.reload
+    assert_not_equal "Updated by Bob", @post.title
+  end
+
+  test "other users cannot destroy post" do
+    bob = users(:bob)
+    log_in_as(bob)
+    assert_no_difference("Post.count") do
+      delete post_url(@post)
+    end
+    assert_redirected_to posts_url
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
+  end
 end
