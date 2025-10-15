@@ -1,3 +1,28 @@
+# == Schema Information
+#
+# Table name: posts
+#
+#  id           :integer          not null, primary key
+#  body         :text
+#  published    :boolean          default(FALSE), not null
+#  published_at :datetime
+#  slug         :string
+#  title        :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  user_id      :integer          not null
+#
+# Indexes
+#
+#  index_posts_on_published                   (published)
+#  index_posts_on_published_and_published_at  (published,published_at)
+#  index_posts_on_published_at                (published_at)
+#  index_posts_on_user_id                     (user_id)
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id)
+#
 require "test_helper"
 
 class PostTest < ActiveSupport::TestCase
