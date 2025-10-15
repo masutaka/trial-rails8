@@ -1,10 +1,11 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: %i[ edit update destroy ]
   before_action :authorize_owner, only: %i[ edit update destroy ]
+  before_action :ensure_post_published, only: %i[ create ]
 
   # POST /posts/:post_slug/comments
   def create
-    @post = Post.find_by!(slug: params[:post_slug])
+    # @post is already loaded by ensure_post_published
     @comment = @post.comments.build(comment_params)
     @comment.user = Current.user
 
@@ -47,6 +48,14 @@ class CommentsController < ApplicationController
       unless @comment.user == Current.user
         redirect_to root_url, alert: "You are not authorized to perform this action."
       end
+    end
+
+    # Ensure the post is published before allowing comments
+    def ensure_post_published
+      @post = Post.find_by!(slug: params[:post_slug])
+      return if @post.published
+
+      redirect_to post_url(@post), alert: "この記事は未公開のため、コメントを投稿できません。"
     end
 
     # Only allow a list of trusted parameters through.

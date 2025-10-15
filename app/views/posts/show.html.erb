@@ -9,6 +9,34 @@
     </div>
   </nav>
 
+  <% unless @post.published %>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <div>
+          <h3 class="text-sm font-medium text-yellow-800">
+            <% if @post.draft? %>
+              この記事は下書きです
+            <% elsif @post.scheduled? %>
+              この記事は予約投稿です
+            <% else %>
+              この記事は未公開です
+            <% end %>
+          </h3>
+          <div class="mt-1 text-sm text-yellow-700">
+            <% if @post.published_at.present? %>
+              公開予定日時: <%= @post.published_at.strftime("%Y年%m月%d日 %H:%M") %>
+            <% else %>
+              公開日時が設定されていません
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-6">
     <%= render @post, show_body: true %>
   </div>
@@ -74,17 +102,25 @@
     </div>
 
     <!-- 新規コメントフォーム -->
-    <% if authenticated? %>
-      <div class="border-t border-gray-200 pt-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
-        <%= render "comments/form", comment: @comment || Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
-      </div>
+    <% if @post.published %>
+      <% if authenticated? %>
+        <div class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
+          <%= render "comments/form", comment: @comment || Comment.new, url: post_comments_path(@post), submit_label: "コメントを投稿" %>
+        </div>
+      <% else %>
+        <div class="border-t border-gray-200 pt-6">
+          <p class="text-gray-600 text-sm">
+            コメントを投稿するには
+            <%= link_to "ログイン", new_session_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
+            してください。
+          </p>
+        </div>
+      <% end %>
     <% else %>
       <div class="border-t border-gray-200 pt-6">
         <p class="text-gray-600 text-sm">
-          コメントを投稿するには
-          <%= link_to "ログイン", new_session_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
-          してください。
+          この記事は未公開のため、コメントを投稿できません。
         </p>
       </div>
     <% end %>

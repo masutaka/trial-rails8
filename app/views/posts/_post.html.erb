@@ -1,7 +1,14 @@
 <%# locals: (post:, show_body: true) %>
 <div id="<%= dom_id post %>">
   <div class="mb-4">
-    <h1 class="text-2xl font-semibold text-gray-900 mb-2"><%= post.title %></h1>
+    <div class="flex items-center gap-2 mb-2">
+      <h1 class="text-2xl font-semibold text-gray-900"><%= post.title %></h1>
+      <% unless post.published %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          Draft
+        </span>
+      <% end %>
+    </div>
     <div class="flex items-center text-sm text-gray-600 space-x-4">
       <div class="flex items-center">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -13,7 +20,13 @@
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
         </svg>
-        <%= post.published_at&.strftime("%B %d, %Y") || "Not published" %>
+        <% if post.published %>
+          <%= post.published_at&.strftime("%B %d, %Y") || "公開日時未設定" %>
+        <% elsif post.published_at.present? %>
+          公開予定: <%= post.published_at.strftime("%B %d, %Y") %>
+        <% else %>
+          公開日時未設定
+        <% end %>
       </div>
       <% unless show_body %>
         <div class="flex items-center">
