@@ -1,24 +1,30 @@
-# README
+# trial-rails8
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Rails 8 の学習用リポジトリです。
 
-Things you may want to cover:
+## 機能
 
-* Ruby version
+- ブログ投稿システム（記事の予約投稿機能付き）
+- コメント機能
+- ユーザー認証（BCrypt）
+- Solid Queue による Active Job の実行
 
-* System dependencies
+## Active Job の監視
 
-* Configuration
+開発環境では、Active Job の実行状況を Web UI で確認できます。
 
-* Database creation
+http://localhost:3000/jobs
 
-* Database initialization
+Mission Control Jobs を使用して、以下の情報を確認できます：
 
-* How to run the test suite
+- ジョブの実行履歴
+- キューの状態（実行中・待機中・完了・失敗）
+- ジョブの詳細情報（引数、実行時間、エラーなど）
+- 失敗したジョブの手動再試行
 
-* Services (job queues, cache servers, search engines, etc.)
+## セットアップ
 
-* Deployment instructions
-
-* ...
+```bash
+# 初期セットアップ（依存関係のインストール、データベース作成、サーバー起動まで）
+bin/setup
+```
