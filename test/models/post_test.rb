@@ -189,4 +189,59 @@ class PostTest < ActiveSupport::TestCase
       end
     end
   end
+
+  # visible_to スコープのテスト
+  test "visible_to should return published posts and user's unpublished posts when user is present" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      alice = users(:alice)
+      visible_posts = Post.visible_to(alice)
+
+      # 公開記事（全員分）
+      assert_includes visible_posts, posts(:alice_old_post)
+      assert_includes visible_posts, posts(:one)
+      assert_includes visible_posts, posts(:two)
+
+      # Alice の未公開記事
+      assert_includes visible_posts, posts(:scheduled)
+      assert_includes visible_posts, posts(:draft)
+
+      # Bob の未公開記事は含まれない
+      assert_not_includes visible_posts, posts(:ready_to_publish)
+    end
+  end
+
+  test "visible_to should return only published posts when user is nil" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      visible_posts = Post.visible_to(nil)
+
+      # 公開記事のみ
+      assert_includes visible_posts, posts(:alice_old_post)
+      assert_includes visible_posts, posts(:one)
+      assert_includes visible_posts, posts(:two)
+
+      # 未公開記事は含まれない
+      assert_not_includes visible_posts, posts(:scheduled)
+      assert_not_includes visible_posts, posts(:draft)
+      assert_not_includes visible_posts, posts(:ready_to_publish)
+    end
+  end
+
+  test "visible_to should not include other users' unpublished posts" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      bob = users(:bob)
+      visible_posts = Post.visible_to(bob)
+
+      # 公開記事（全員分）
+      assert_includes visible_posts, posts(:alice_old_post)
+      assert_includes visible_posts, posts(:one)
+      assert_includes visible_posts, posts(:two)
+
+      # Bob の未公開記事
+      assert_includes visible_posts, posts(:ready_to_publish)
+
+      # Alice の未公開記事は含まれない
+      assert_not_includes visible_posts, posts(:scheduled)
+      assert_not_includes visible_posts, posts(:draft)
+    end
+  end
 end
