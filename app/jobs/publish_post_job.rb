@@ -11,8 +11,8 @@ class PublishPostJob < ApplicationJob
     # published_at が未来の場合はスキップ
     return if post.published_at.present? && post.published_at > Time.current
 
-    # scheduled_at と現在の published_at が異なる場合はスキップ（公開日時が変更された）
-    return if post.published_at.to_i != scheduled_at
+    # scheduled_at と現在の published_at が異なる場合はスキップ（公開日時が変更された or 取り消された）
+    return if post.published_at.blank? || post.published_at.to_i != scheduled_at
 
     # 記事を公開
     post.update!(published: true)
