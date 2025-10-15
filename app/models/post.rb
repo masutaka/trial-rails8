@@ -14,7 +14,7 @@ class Post < ApplicationRecord
     end
   }
 
-  after_commit :schedule_publication, on: [:create, :update], if: :should_schedule_publication?
+  after_commit :schedule_publication, on: [ :create, :update ], if: :should_schedule_publication?
 
   def to_param
     slug
