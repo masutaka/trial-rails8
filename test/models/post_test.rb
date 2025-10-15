@@ -268,4 +268,119 @@ class PostTest < ActiveSupport::TestCase
     assert_not draft_post.viewable_by?(bob), "他のユーザーは未公開記事を閲覧不可"
     assert_not draft_post.viewable_by?(nil), "未認証ユーザーは未公開記事を閲覧不可"
   end
+
+  # 公開ジョブスケジュールコールバックのテスト
+  test "enqueues PublishPostJob when creating post with published_at" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      alice = users(:alice)
+      future_time = 1.hour.from_now
+
+      assert_enqueued_with(job: PublishPostJob) do
+        Post.create!(
+          user: alice,
+          title: "Scheduled Post",
+          body: "This will be published later",
+          slug: "scheduled-post-test",
+          published_at: future_time
+        )
+      end
+    end
+  end
+
+  test "enqueues PublishPostJob when updating published_at" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      post = posts(:draft)
+      future_time = 1.hour.from_now
+
+      assert_enqueued_with(job: PublishPostJob) do
+        post.update!(published_at: future_time)
+      end
+    end
+  end
+
+  test "enqueues PublishPostJob with scheduled_at argument" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      alice = users(:alice)
+      future_time = 1.hour.from_now
+
+      assert_enqueued_with(
+        job: PublishPostJob,
+        args: ->(args) { args[0].is_a?(Integer) && args[1] == future_time.to_i }
+      ) do
+        Post.create!(
+          user: alice,
+          title: "Scheduled Post",
+          body: "This will be published later",
+          slug: "scheduled-post-test-2",
+          published_at: future_time
+        )
+      end
+    end
+  end
+
+  test "enqueues PublishPostJob with delay when published_at is in future" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      alice = users(:alice)
+      future_time = 1.hour.from_now
+
+      assert_enqueued_with(
+        job: PublishPostJob,
+        at: future_time
+      ) do
+        Post.create!(
+          user: alice,
+          title: "Future Post",
+          body: "This will be published in the future",
+          slug: "future-post-test",
+          published_at: future_time
+        )
+      end
+    end
+  end
+
+  test "enqueues PublishPostJob immediately when published_at is in past" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      alice = users(:alice)
+      past_time = 1.hour.ago
+
+      # 過去の日時の場合は即座に実行される（atオプションなし）
+      assert_enqueued_with(job: PublishPostJob) do
+        Post.create!(
+          user: alice,
+          title: "Past Post",
+          body: "This should be published immediately",
+          slug: "past-post-test",
+          published_at: past_time
+        )
+      end
+    end
+  end
+
+  test "does not enqueue PublishPostJob when published_at is nil" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      alice = users(:alice)
+
+      assert_no_enqueued_jobs(only: PublishPostJob) do
+        Post.create!(
+          user: alice,
+          title: "Draft Post",
+          body: "This is a draft",
+          slug: "draft-post-test",
+          published_at: nil
+        )
+      end
+    end
+  end
+
+  test "does not enqueue PublishPostJob when already published" do
+    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+      post = posts(:one)
+
+      assert post.published, "Post should be published"
+
+      assert_no_enqueued_jobs(only: PublishPostJob) do
+        post.update!(title: "Updated Title")
+      end
+    end
+  end
 end

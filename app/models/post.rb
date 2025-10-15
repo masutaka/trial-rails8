@@ -14,6 +14,8 @@ class Post < ApplicationRecord
     end
   }
 
+  after_commit :schedule_publication, on: [:create, :update], if: :should_schedule_publication?
+
   def to_param
     slug
   end
@@ -53,6 +55,22 @@ class Post < ApplicationRecord
     else
       # それ以外: 公開記事のみから前後を取得
       Post.published
+    end
+  end
+
+  def should_schedule_publication?
+    published_at.present? && !published
+  end
+
+  def schedule_publication
+    scheduled_at = published_at.to_i
+
+    if published_at > Time.current
+      # 未来の日時の場合は遅延実行
+      PublishPostJob.set(wait_until: published_at).perform_later(id, scheduled_at)
+    else
+      # 過去または現在の日時の場合は即座に実行
+      PublishPostJob.perform_later(id, scheduled_at)
     end
   end
 end
