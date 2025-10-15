@@ -244,4 +244,28 @@ class PostTest < ActiveSupport::TestCase
       assert_not_includes visible_posts, posts(:draft)
     end
   end
+
+  # viewable_by? メソッドのテスト
+  test "viewable_by? should return true for published posts by anyone" do
+    published_post = posts(:one)
+
+    assert published_post.viewable_by?(nil), "未認証ユーザーでも公開記事は閲覧可能"
+    assert published_post.viewable_by?(users(:alice)), "作成者は公開記事を閲覧可能"
+    assert published_post.viewable_by?(users(:bob)), "他のユーザーも公開記事を閲覧可能"
+  end
+
+  test "viewable_by? should return true for unpublished posts by author" do
+    draft_post = posts(:draft)
+    alice = users(:alice)
+
+    assert draft_post.viewable_by?(alice), "作成者は未公開記事を閲覧可能"
+  end
+
+  test "viewable_by? should return false for unpublished posts by non-author" do
+    draft_post = posts(:draft)
+    bob = users(:bob)
+
+    assert_not draft_post.viewable_by?(bob), "他のユーザーは未公開記事を閲覧不可"
+    assert_not draft_post.viewable_by?(nil), "未認証ユーザーは未公開記事を閲覧不可"
+  end
 end

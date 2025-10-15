@@ -26,6 +26,10 @@ class Post < ApplicationRecord
     !published && published_at.nil?
   end
 
+  def viewable_by?(user)
+    published || (user && self.user == user)
+  end
+
   def previous_post(current_user = nil)
     navigation_scope(current_user)
       .where("published_at < ?", published_at)
