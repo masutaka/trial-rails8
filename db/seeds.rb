@@ -69,19 +69,25 @@ first_post = Post.find_by(slug: "first-post")
 second_post = Post.find_by(slug: "second-post")
 
 if first_post
-  Comment.find_or_create_by!(post: first_post, user: bob) do |comment|
-    comment.body = "素晴らしい投稿ですね！"
-  end
+  Comment.find_or_create_by!(
+    post: first_post,
+    user: bob,
+    body: "素晴らしい投稿ですね！"
+  )
 
-  Comment.find_or_create_by!(post: first_post, user: alice) do |comment|
-    comment.body = "ありがとうございます！"
-  end
+  Comment.find_or_create_by!(
+    post: first_post,
+    user: alice,
+    body: "ありがとうございます！"
+  )
 end
 
 if second_post
-  Comment.find_or_create_by!(post: second_post, user: alice) do |comment|
-    comment.body = "Solid Queueは本当に便利ですよね。"
-  end
+  Comment.find_or_create_by!(
+    post: second_post,
+    user: alice,
+    body: "Solid Queueは本当に便利ですよね。"
+  )
 end
 
 # 商品の作成
