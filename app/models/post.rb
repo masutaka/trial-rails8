@@ -26,6 +26,7 @@
 class Post < ApplicationRecord
   belongs_to :user
   has_many :comments, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   scope :published, -> { where(published: true) }
   scope :scheduled, -> { where(published: false).where("published_at > ?", Time.current) }
