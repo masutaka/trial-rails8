@@ -42,17 +42,26 @@ class Notification < ApplicationRecord
   private
 
   def broadcast_notification
-    broadcast_to_user
+    broadcast_updates
   end
 
   def broadcast_badge_update
-    broadcast_to_user
+    broadcast_updates
   end
 
-  def broadcast_to_user
-    ActionCable.server.broadcast(
+  def broadcast_updates
+    Turbo::StreamsChannel.broadcast_update_to(
       "notifications_#{user_id}",
-      { unread_count: Notification.unread_count_for(user) }
+      target: "notification_badge",
+      partial: "notifications/badge",
+      locals: { user: user }
+    )
+
+    Turbo::StreamsChannel.broadcast_update_to(
+      "notifications_#{user_id}",
+      target: "notification_dropdown",
+      partial: "notifications/dropdown",
+      locals: { user: user }
     )
   end
 end
