@@ -28,3 +28,23 @@ Mission Control Jobs を使用して、以下の情報を確認できます：
 # 初期セットアップ（依存関係のインストール、データベース作成、サーバー起動まで）
 bin/setup
 ```
+
+## データベース構造
+
+データベースのER図（Entity Relationship Diagram）は、以下のリンクから確認できます。
+
+### メインアプリケーション
+
+<a href="https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/schema.rb" target="_blank" rel="noopener noreferrer">ERDを表示</a>
+
+アプリケーションのコアテーブル（users、posts、comments など）の構造とリレーションシップを確認できます。
+
+### Solid Queue（Active Job）
+
+<a href="https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/queue_schema.rb" target="_blank" rel="noopener noreferrer">ERDを表示</a>
+
+Active Job の内部構造（ジョブキュー、実行状態、スケジューリングなど）を確認できます。
+
+---
+
+Liam ERDを使用して、データベースのテーブル構造とリレーションシップをインタラクティブに閲覧できます。
