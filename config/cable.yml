@@ -3,7 +3,7 @@ development:
   connects_to:
     database:
       writing: cable
-  polling_interval: 0.1.seconds
+  polling_interval: 1.0.seconds
   message_retention: 1.day
 
 test:
