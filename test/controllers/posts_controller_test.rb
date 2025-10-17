@@ -1,11 +1,6 @@
 require "test_helper"
 
 class PostsControllerTest < ActionDispatch::IntegrationTest
-  # 共通ヘルパーメソッド
-  def log_in_as(user)
-    post session_url, params: { email_address: user.email_address, password: "password" }
-  end
-
   class IndexTest < PostsControllerTest
     test "shows only published posts for unauthenticated users" do
       get posts_url

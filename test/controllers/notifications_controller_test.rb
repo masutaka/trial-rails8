@@ -1,11 +1,6 @@
 require "test_helper"
 
 class NotificationsControllerTest < ActionDispatch::IntegrationTest
-  # 共通ヘルパーメソッド
-  def log_in_as(user)
-    post session_url, params: { email_address: user.email_address, password: "password" }
-  end
-
   class MarkAsReadTest < NotificationsControllerTest
     setup do
       @alice = users(:alice)

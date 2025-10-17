@@ -9,10 +9,6 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     @bob_comment = comments(:two)  # bob's comment on post :one
   end
 
-  def log_in_as(user)
-    post session_url, params: { email_address: user.email_address, password: "password" }
-  end
-
   # create アクションのテスト
   test "should create comment when logged in" do
     log_in_as(@alice)
