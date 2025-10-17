@@ -47,3 +47,9 @@ Mission Control Jobs を使用して、以下の情報を確認できます：
 [ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/queue_schema.rb)
 
 Active Job の内部構造（ジョブキュー、実行状態、スケジューリングなど）を確認できます。
+
+### Solid Cable（Action Cable）
+
+[ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/cable_schema.rb)
+
+Action Cable の内部構造（WebSocketメッセージ、チャンネル、ブロードキャストなど）を確認できます。
