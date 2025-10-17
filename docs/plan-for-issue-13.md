@@ -292,6 +292,11 @@ t-wada氏の推奨するTDDアプローチに従い、「テストを書く → 
    - ドロップダウンの表示切り替え
    - Turbo Streams が DOM 更新を自動処理
 
+4. **Notification モデルのブロードキャスト実装を Turbo Streams に変更**
+   - **現状**: Phase 2 で Action Cable（`ActionCable.server.broadcast`）を使用
+   - **変更点**: `Turbo::StreamsChannel.broadcast_update_to` を使用してバッジパーシャルをブロードキャスト
+   - パーシャル作成後に実装を変更し、テストを更新
+
 ## テスト戦略
 
 TDDアプローチに従い、以下の順序でテストを記述します：
