@@ -24,7 +24,31 @@
 require "test_helper"
 
 class NotificationTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  class UnreadScopeTest < NotificationTest
+    setup do
+      @user = users(:alice)
+      @post = posts(:one)
+    end
+
+    test "returns only unread notifications" do
+      # 未読通知を作成
+      unread_notification = Notification.create!(
+        user: @user,
+        post: @post,
+        read: false
+      )
+
+      # 既読通知を作成
+      read_notification = Notification.create!(
+        user: @user,
+        post: @post,
+        read: true
+      )
+
+      # unread スコープは未読通知のみを返すことを確認
+      unread_notifications = Notification.unread
+      assert_includes unread_notifications, unread_notification
+      assert_not_includes unread_notifications, read_notification
+    end
+  end
 end
