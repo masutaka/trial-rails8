@@ -31,4 +31,8 @@ class Notification < ApplicationRecord
   def mark_as_read!
     update!(read: true)
   end
+
+  def self.unread_count_for(user)
+    where(user: user).unread.count
+  end
 end

@@ -110,4 +110,30 @@ class NotificationTest < ActiveSupport::TestCase
       assert @notification.reload.read
     end
   end
+
+  class UnreadCountForTest < NotificationTest
+    setup do
+      @alice = users(:alice)
+      @bob = users(:bob)
+      @post = posts(:one)
+    end
+
+    test "returns unread notification count for specified user" do
+      # Alice の未読通知を2件作成
+      Notification.create!(user: @alice, post: @post, read: false)
+      Notification.create!(user: @alice, post: @post, read: false)
+
+      # Alice の既読通知を1件作成
+      Notification.create!(user: @alice, post: @post, read: true)
+
+      # Bob の未読通知を1件作成
+      Notification.create!(user: @bob, post: @post, read: false)
+
+      # Alice の未読通知数は2件
+      assert_equal 2, Notification.unread_count_for(@alice)
+
+      # Bob の未読通知数は1件
+      assert_equal 1, Notification.unread_count_for(@bob)
+    end
+  end
 end
