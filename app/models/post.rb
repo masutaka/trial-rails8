@@ -41,6 +41,7 @@ class Post < ApplicationRecord
   }
 
   after_commit :schedule_publication, on: [ :create, :update ], if: :should_schedule_publication?
+  after_commit :notify_all_users, on: [ :create, :update ], if: :just_published?
 
   def to_param
     slug
@@ -102,5 +103,9 @@ class Post < ApplicationRecord
       # 過去または現在の日時の場合は即座に実行
       PublishPostJob.perform_later(id, scheduled_at)
     end
+  end
+
+  def notify_all_users
+    NotifyPublicationJob.perform_later(id)
   end
 end

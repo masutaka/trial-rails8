@@ -347,6 +347,56 @@ class PostTest < ActiveSupport::TestCase
     end
   end
 
+  class NotificationCallbackTest < PostTest
+    test "enqueues NotifyPublicationJob when post is published" do
+      alice = users(:alice)
+
+      assert_enqueued_with(job: NotifyPublicationJob) do
+        Post.create!(
+          user: alice,
+          title: "New Post",
+          body: "This is a new post",
+          slug: "new-post",
+          published: true,
+          published_at: Time.current
+        )
+      end
+    end
+
+    test "enqueues NotifyPublicationJob when draft is published" do
+      post = posts(:draft)
+      assert_not post.published
+
+      assert_enqueued_with(job: NotifyPublicationJob) do
+        post.update!(published: true)
+      end
+    end
+
+    test "does not enqueue NotifyPublicationJob when saving draft" do
+      alice = users(:alice)
+
+      assert_no_enqueued_jobs(only: NotifyPublicationJob) do
+        Post.create!(
+          user: alice,
+          title: "Draft Post",
+          body: "This is a draft",
+          slug: "draft-post-notification-test",
+          published: false,
+          published_at: nil
+        )
+      end
+    end
+
+    test "does not enqueue NotifyPublicationJob when updating published post" do
+      post = posts(:one)
+      assert post.published
+
+      assert_no_enqueued_jobs(only: NotifyPublicationJob) do
+        post.update!(title: "Updated Title")
+      end
+    end
+  end
+
   class PublicationCallbackTest < PostTest
     test "enqueues PublishPostJob when creating post with published_at" do
       travel_to TEST_BASE_TIME do
