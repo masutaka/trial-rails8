@@ -51,4 +51,42 @@ class NotificationTest < ActiveSupport::TestCase
       assert_not_includes unread_notifications, read_notification
     end
   end
+
+  class RecentScopeTest < NotificationTest
+    setup do
+      @user = users(:alice)
+      @post = posts(:one)
+    end
+
+    test "returns notifications ordered by created_at descending" do
+      # 通知を時系列で作成
+      travel_to Time.zone.parse("2025-10-17 10:00:00") do
+        @old_notification = Notification.create!(
+          user: @user,
+          post: @post,
+          read: false
+        )
+      end
+
+      travel_to Time.zone.parse("2025-10-17 11:00:00") do
+        @middle_notification = Notification.create!(
+          user: @user,
+          post: @post,
+          read: false
+        )
+      end
+
+      travel_to Time.zone.parse("2025-10-17 12:00:00") do
+        @new_notification = Notification.create!(
+          user: @user,
+          post: @post,
+          read: false
+        )
+      end
+
+      # recent スコープは created_at の降順で取得することを確認
+      recent_notifications = Notification.recent
+      assert_equal [ @new_notification, @middle_notification, @old_notification ], recent_notifications.to_a
+    end
+  end
 end
