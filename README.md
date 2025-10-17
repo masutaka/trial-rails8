@@ -38,12 +38,12 @@ Mission Control Jobs を使用して、以下の情報を確認できます：
 
 ### メインアプリケーション
 
-<a href="https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/schema.rb" target="_blank" rel="noopener noreferrer">ERDを表示</a>
+[ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/schema.rb)
 
 アプリケーションのコアテーブル（users、posts、comments など）の構造とリレーションシップを確認できます。
 
 ### Solid Queue（Active Job）
 
-<a href="https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/queue_schema.rb" target="_blank" rel="noopener noreferrer">ERDを表示</a>
+[ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/queue_schema.rb)
 
 Active Job の内部構造（ジョブキュー、実行状態、スケジューリングなど）を確認できます。
