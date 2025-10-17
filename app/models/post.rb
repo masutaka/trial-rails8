@@ -72,6 +72,10 @@ class Post < ApplicationRecord
       .first
   end
 
+  def just_published?
+    saved_change_to_published? && published?
+  end
+
   private
 
   def navigation_scope(current_user)

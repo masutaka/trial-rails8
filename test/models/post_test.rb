@@ -304,6 +304,49 @@ class PostTest < ActiveSupport::TestCase
     end
   end
 
+  class JustPublishedTest < PostTest
+    test "should return true when post is created with published: true" do
+      alice = users(:alice)
+      post = Post.create!(
+        user: alice,
+        title: "New Published Post",
+        body: "This is a new published post",
+        slug: "new-published-post",
+        published: true,
+        published_at: Time.current
+      )
+
+      assert post.just_published?
+    end
+
+    test "should return true when published changes from false to true" do
+      post = posts(:draft)
+      assert_not post.published
+
+      post.update!(published: true)
+
+      assert post.just_published?
+    end
+
+    test "should return false when post is already published" do
+      post = posts(:one)
+      assert post.published
+
+      post.update!(title: "Updated Title")
+
+      assert_not post.just_published?
+    end
+
+    test "should return false when post remains unpublished" do
+      post = posts(:draft)
+      assert_not post.published
+
+      post.update!(title: "Updated Draft Title")
+
+      assert_not post.just_published?
+    end
+  end
+
   class PublicationCallbackTest < PostTest
     test "enqueues PublishPostJob when creating post with published_at" do
       travel_to TEST_BASE_TIME do
