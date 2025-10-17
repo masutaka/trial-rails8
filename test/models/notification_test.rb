@@ -89,4 +89,25 @@ class NotificationTest < ActiveSupport::TestCase
       assert_equal [ @new_notification, @middle_notification, @old_notification ], recent_notifications.to_a
     end
   end
+
+  class MarkAsReadTest < NotificationTest
+    setup do
+      @user = users(:alice)
+      @post = posts(:one)
+      @notification = Notification.create!(
+        user: @user,
+        post: @post,
+        read: false
+      )
+    end
+
+    test "marks notification as read" do
+      assert_not @notification.read
+
+      @notification.mark_as_read!
+
+      assert @notification.read
+      assert @notification.reload.read
+    end
+  end
 end
