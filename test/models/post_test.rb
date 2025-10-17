@@ -56,7 +56,7 @@ class PostTest < ActiveSupport::TestCase
 
   # published スコープのテスト
   test "published scope should return only published posts" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       published_posts = Post.published
 
       assert_includes published_posts, posts(:one)
@@ -69,7 +69,7 @@ class PostTest < ActiveSupport::TestCase
 
   # scheduled スコープのテスト
   test "scheduled scope should return unpublished posts with future published_at" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       scheduled_posts = Post.scheduled
 
       assert_includes scheduled_posts, posts(:scheduled)
@@ -82,7 +82,7 @@ class PostTest < ActiveSupport::TestCase
 
   # draft スコープのテスト
   test "draft scope should return unpublished posts without published_at" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       draft_posts = Post.draft
 
       assert_includes draft_posts, posts(:draft)
@@ -95,7 +95,7 @@ class PostTest < ActiveSupport::TestCase
 
   # ready_to_publish スコープのテスト
   test "ready_to_publish scope should return unpublished posts with past or present published_at" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       ready_posts = Post.ready_to_publish
 
       assert_includes ready_posts, posts(:ready_to_publish)
@@ -108,7 +108,7 @@ class PostTest < ActiveSupport::TestCase
 
   # scheduled? メソッドのテスト
   test "scheduled? should return true for scheduled posts" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       assert posts(:scheduled).scheduled?
       assert_not posts(:one).scheduled?
       assert_not posts(:draft).scheduled?
@@ -118,7 +118,7 @@ class PostTest < ActiveSupport::TestCase
 
   # draft? メソッドのテスト
   test "draft? should return true for draft posts" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       assert posts(:draft).draft?
       assert_not posts(:one).draft?
       assert_not posts(:scheduled).draft?
@@ -128,7 +128,7 @@ class PostTest < ActiveSupport::TestCase
 
   # previous_post メソッドのテスト
   test "previous_post should return previous post from author's posts when current_user is the author" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       post = posts(:one)
 
@@ -142,7 +142,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "previous_post should return previous post from published posts only when current_user is not the author" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       bob = users(:bob)
       post = posts(:one)
 
@@ -157,7 +157,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "previous_post should return previous post from published posts only when current_user is nil" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:one)
 
       # 未認証ユーザーは公開記事のみが対象
@@ -172,7 +172,7 @@ class PostTest < ActiveSupport::TestCase
 
   # next_post メソッドのテスト
   test "next_post should return next post from author's posts when current_user is the author" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       post = posts(:alice_old_post)
 
@@ -187,7 +187,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "next_post should return next post from published posts only when current_user is not the author" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       bob = users(:bob)
       post = posts(:alice_old_post)
 
@@ -202,7 +202,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "next_post should return next post from published posts only when current_user is nil" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:alice_old_post)
 
       # 未認証ユーザーは公開記事のみが対象
@@ -217,7 +217,7 @@ class PostTest < ActiveSupport::TestCase
 
   # visible_to スコープのテスト
   test "visible_to should return published posts and user's unpublished posts when user is present" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       visible_posts = Post.visible_to(alice)
 
@@ -236,7 +236,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "visible_to should return only published posts when user is nil" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       visible_posts = Post.visible_to(nil)
 
       # 公開記事のみ
@@ -252,7 +252,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "visible_to should not include other users' unpublished posts" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       bob = users(:bob)
       visible_posts = Post.visible_to(bob)
 
@@ -296,7 +296,7 @@ class PostTest < ActiveSupport::TestCase
 
   # 公開ジョブスケジュールコールバックのテスト
   test "enqueues PublishPostJob when creating post with published_at" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       future_time = 1.hour.from_now
 
@@ -313,7 +313,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "enqueues PublishPostJob when updating published_at" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:draft)
       future_time = 1.hour.from_now
 
@@ -324,7 +324,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "enqueues PublishPostJob with scheduled_at argument" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       future_time = 1.hour.from_now
 
@@ -344,7 +344,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "enqueues PublishPostJob with delay when published_at is in future" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       future_time = 1.hour.from_now
 
@@ -364,7 +364,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "enqueues PublishPostJob immediately when published_at is in past" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
       past_time = 1.hour.ago
 
@@ -382,7 +382,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "does not enqueue PublishPostJob when published_at is nil" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       alice = users(:alice)
 
       assert_no_enqueued_jobs(only: PublishPostJob) do
@@ -398,7 +398,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "does not enqueue PublishPostJob when already published" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:one)
 
       assert post.published, "Post should be published"

@@ -2,7 +2,7 @@ require "test_helper"
 
 class PublishPostJobTest < ActiveJob::TestCase
   test "publishes a post that is ready to publish" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:ready_to_publish)
       scheduled_at = post.published_at.to_i
 
@@ -17,7 +17,7 @@ class PublishPostJobTest < ActiveJob::TestCase
   end
 
   test "skips publishing if post is already published" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:alice_old_post)
       scheduled_at = post.published_at.to_i
 
@@ -31,7 +31,7 @@ class PublishPostJobTest < ActiveJob::TestCase
   end
 
   test "skips publishing if published_at is in the future" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:scheduled)
       scheduled_at = post.published_at.to_i
 
@@ -46,7 +46,7 @@ class PublishPostJobTest < ActiveJob::TestCase
   end
 
   test "skips publishing if scheduled_at and current published_at differ" do
-    travel_to Time.zone.parse("2025-10-15 12:00:00") do
+    travel_to TEST_BASE_TIME do
       post = posts(:ready_to_publish)
       original_published_at = post.published_at
       scheduled_at = original_published_at.to_i

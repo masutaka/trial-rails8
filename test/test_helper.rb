@@ -2,6 +2,9 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 
+# テスト全体で使用する基準日時
+TEST_BASE_TIME = Time.zone.parse("2025-10-15 10:00:00")
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers

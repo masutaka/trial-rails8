@@ -29,7 +29,7 @@ alice_old_post:
   user: alice
   title: Alice Old Post
   body: This is Alice's old post
-  published_at: <%= 3.days.ago %>
+  published_at: <%= TEST_BASE_TIME - 3.days %>
   slug: alice-old-post
   published: true
 
@@ -37,7 +37,7 @@ one:
   user: alice
   title: MyString
   body: MyText
-  published_at: <%= 2.days.ago %>
+  published_at: <%= TEST_BASE_TIME - 2.days %>
   slug: my-string-one
   published: true
 
@@ -45,7 +45,7 @@ two:
   user: bob
   title: MyString Two
   body: MyText Two
-  published_at: <%= 1.day.ago %>
+  published_at: <%= TEST_BASE_TIME - 1.day %>
   slug: my-string-two
   published: true
 
@@ -53,7 +53,7 @@ scheduled:
   user: alice
   title: Scheduled Post
   body: This is a scheduled post
-  published_at: <%= 1.day.from_now %>
+  published_at: <%= TEST_BASE_TIME + 1.day %>
   slug: scheduled-post
   published: false
 
@@ -69,6 +69,6 @@ ready_to_publish:
   user: bob
   title: Ready to Publish
   body: This post is ready to publish
-  published_at: <%= 2.days.ago %>
+  published_at: <%= TEST_BASE_TIME - 2.days %>
   slug: ready-to-publish
   published: false
