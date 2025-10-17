@@ -23,12 +23,5 @@
 #  post_id  (post_id => posts.id) ON DELETE => cascade
 #  user_id  (user_id => users.id) ON DELETE => cascade
 #
-one:
-  user: one
-  post: one
-  read: false
 
-two:
-  user: two
-  post: two
-  read: false
+# フィクスチャは Phase 2 で TDD 実装時に追加します
