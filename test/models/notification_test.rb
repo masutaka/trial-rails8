@@ -136,4 +136,33 @@ class NotificationTest < ActiveSupport::TestCase
       assert_equal 1, Notification.unread_count_for(@bob)
     end
   end
+
+  class BroadcastTest < NotificationTest
+    setup do
+      @user = users(:alice)
+      @post = posts(:one)
+    end
+
+    test "broadcasts after notification is created" do
+      assert_broadcasts "notifications_#{@user.id}", 1 do
+        Notification.create!(user: @user, post: @post, read: false)
+      end
+    end
+
+    test "broadcasts after notification is marked as read" do
+      notification = Notification.create!(user: @user, post: @post, read: false)
+
+      assert_broadcasts "notifications_#{@user.id}", 1 do
+        notification.mark_as_read!
+      end
+    end
+
+    test "does not broadcast when read status is not changed" do
+      notification = Notification.create!(user: @user, post: @post, read: false)
+
+      assert_broadcasts "notifications_#{@user.id}", 0 do
+        notification.update!(user: @user)
+      end
+    end
+  end
 end

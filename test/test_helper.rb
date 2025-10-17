@@ -16,6 +16,9 @@ module ActiveSupport
     # Include ActiveJob test helpers for job testing
     include ActiveJob::TestHelper
 
+    # Include ActionCable test helpers for broadcast testing
+    include ActionCable::TestHelper
+
     # Add more helper methods to be used by all tests here...
   end
 end

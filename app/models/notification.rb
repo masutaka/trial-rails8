@@ -28,11 +28,31 @@ class Notification < ApplicationRecord
   scope :unread, -> { where(read: false) }
   scope :recent, -> { order(created_at: :desc) }
 
+  after_create_commit :broadcast_notification
+  after_update_commit :broadcast_badge_update, if: :saved_change_to_read?
+
   def mark_as_read!
     update!(read: true)
   end
 
   def self.unread_count_for(user)
     where(user: user).unread.count
+  end
+
+  private
+
+  def broadcast_notification
+    broadcast_to_user
+  end
+
+  def broadcast_badge_update
+    broadcast_to_user
+  end
+
+  def broadcast_to_user
+    ActionCable.server.broadcast(
+      "notifications_#{user_id}",
+      { unread_count: Notification.unread_count_for(user) }
+    )
   end
 end
