@@ -24,4 +24,4 @@
 #  user_id  (user_id => users.id) ON DELETE => cascade
 #
 
-# フィクスチャは Phase 2 で TDD 実装時に追加します
+# Notification のテストデータは各テスト内で動的に生成します
