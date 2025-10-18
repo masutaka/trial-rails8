@@ -23,10 +23,10 @@ export default class extends Controller {
 
   open() {
     this.dropdownTarget.classList.remove("hidden")
-    // 次のイベントループで外側クリックのリスナーを追加
-    setTimeout(() => {
+    // 次のフレームでイベントリスナーを追加（現在のクリックイベントが完了した後）
+    requestAnimationFrame(() => {
       document.addEventListener("click", this.boundHandleOutsideClick)
-    }, 0)
+    })
   }
 
   close() {
