@@ -26,6 +26,7 @@
 class Post < ApplicationRecord
   belongs_to :user
   has_many :comments, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   scope :published, -> { where(published: true) }
   scope :scheduled, -> { where(published: false).where("published_at > ?", Time.current) }
@@ -40,6 +41,7 @@ class Post < ApplicationRecord
   }
 
   after_commit :schedule_publication, on: [ :create, :update ], if: :should_schedule_publication?
+  after_commit :notify_all_users, on: [ :create, :update ], if: :just_published?
 
   def to_param
     slug
@@ -71,6 +73,10 @@ class Post < ApplicationRecord
       .first
   end
 
+  def just_published?
+    saved_change_to_published? && published?
+  end
+
   private
 
   def navigation_scope(current_user)
@@ -97,5 +103,9 @@ class Post < ApplicationRecord
       # 過去または現在の日時の場合は即座に実行
       PublishPostJob.perform_later(id, scheduled_at)
     end
+  end
+
+  def notify_all_users
+    NotifyPublicationJob.perform_later(id)
   end
 end

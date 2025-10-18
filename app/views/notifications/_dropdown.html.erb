@@ -1,0 +1,23 @@
+<% user = local_assigns[:user] || Current.user %>
+<% notifications = user.notifications.includes(:post).recent.limit(20) %>
+<div class="w-80 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
+  <div class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <h3 class="text-sm font-semibold text-gray-900">通知</h3>
+    <% if user.notifications.unread.exists? %>
+      <%= button_to "すべて既読", mark_all_as_read_notifications_path,
+          method: :patch,
+          class: "text-xs text-blue-600 hover:text-blue-800 font-medium",
+          form: { data: { turbo_frame: "_top" } } %>
+    <% end %>
+  </div>
+
+  <% if notifications.any? %>
+    <div>
+      <%= render partial: "notifications/notification", collection: notifications %>
+    </div>
+  <% else %>
+    <div class="px-4 py-8 text-center">
+      <p class="text-sm text-gray-500">通知はありません</p>
+    </div>
+  <% end %>
+</div>

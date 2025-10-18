@@ -26,6 +26,11 @@ Rails.application.routes.draw do
     resources :comments, only: [ :create, :edit, :update, :destroy ], shallow: true
   end
 
+  scope :notifications do
+    patch ":id/mark_as_read", to: "notifications#mark_as_read", as: :mark_as_read_notification
+    patch "mark_all_as_read", to: "notifications#mark_all_as_read", as: :mark_all_as_read_notifications
+  end
+
   get "chat", to: "chat#index"
 
   # Mission Control - Jobs dashboard (development only)
