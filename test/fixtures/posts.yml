@@ -23,7 +23,7 @@
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id)
+#  user_id  (user_id => users.id) ON DELETE => cascade
 #
 alice_old_post:
   user: alice

@@ -21,7 +21,7 @@
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id)
+#  user_id  (user_id => users.id) ON DELETE => cascade
 #
 require "test_helper"
 
