@@ -15,7 +15,7 @@
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id)
+#  user_id  (user_id => users.id) ON DELETE => cascade
 #
 class Session < ApplicationRecord
   belongs_to :user

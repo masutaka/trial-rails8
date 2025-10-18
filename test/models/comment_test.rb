@@ -16,8 +16,8 @@
 #
 # Foreign Keys
 #
-#  post_id  (post_id => posts.id)
-#  user_id  (user_id => users.id)
+#  post_id  (post_id => posts.id) ON DELETE => cascade
+#  user_id  (user_id => users.id) ON DELETE => cascade
 #
 require "test_helper"
 
