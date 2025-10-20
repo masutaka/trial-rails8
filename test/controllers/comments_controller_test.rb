@@ -1,6 +1,8 @@
 require "test_helper"
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
+  include ActionView::RecordIdentifier # for dom_id helper
+
   setup do
     @alice = users(:alice)
     @bob = users(:bob)
