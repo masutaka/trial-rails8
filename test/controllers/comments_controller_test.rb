@@ -114,7 +114,9 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
       delete comment_url(@comment)
     end
 
-    assert_redirected_to post_url(@comment.post)
+    assert_response :ok
+    # Turbo Stream レスポンスを確認
+    assert_match /<turbo-stream action="remove" target="#{dom_id(@comment)}">/, response.body
   end
 
   test "should not destroy comment when not logged in" do

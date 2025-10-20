@@ -35,10 +35,9 @@ class CommentsController < ApplicationController
 
   # DELETE /comments/:id
   def destroy
-    @post = @comment.post
-    @comment.destroy!
+    @comment.destroy
 
-    redirect_to post_url(@post), notice: "Comment was successfully destroyed.", status: :see_other
+    render turbo_stream: turbo_stream.remove(helpers.dom_id(@comment))
   end
 
   private
