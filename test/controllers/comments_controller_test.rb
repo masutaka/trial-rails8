@@ -16,7 +16,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
       post post_comments_url(@post), params: { comment: { body: "新しいコメントです。" } }
     end
 
-    assert_redirected_to post_url(@post)
+    assert_response :ok
+    # Turbo Stream レスポンスを確認
+    assert_match /<turbo-stream action="prepend" target="comments">/, response.body
+    assert_match /<turbo-stream action="replace" target="new_comment">/, response.body
+    # 新規コメントの内容が含まれることを確認
+    assert_match /新しいコメントです。/, response.body
   end
 
   test "should not create comment when not logged in" do

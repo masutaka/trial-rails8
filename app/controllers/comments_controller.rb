@@ -10,9 +10,13 @@ class CommentsController < ApplicationController
     @comment.user = Current.user
 
     if @comment.save
-      redirect_to post_url(@post), notice: "Comment was successfully created."
+      render turbo_stream: [
+        turbo_stream.prepend("comments", partial: "comments/comment", locals: { comment: @comment }),
+        turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post })
+      ]
     else
-      render "posts/show", status: :unprocessable_entity
+      render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post, comment: @comment }),
+             status: :unprocessable_entity
     end
   end
 

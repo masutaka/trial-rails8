@@ -1,0 +1,4 @@
+<div id="new_comment" class="border-t border-gray-200 pt-6">
+  <h3 class="text-lg font-medium text-gray-900 mb-4">コメントを投稿</h3>
+  <%= render "comments/form", comment: local_assigns[:comment] || Comment.new, url: post_comments_path(post), submit_label: "コメントを投稿" %>
+</div>
