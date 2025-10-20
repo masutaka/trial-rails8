@@ -12,11 +12,11 @@ Rails 8 の学習用リポジトリです。
 
 **使用している Rails 8 の機能:**
 - **Active Job + Solid Queue**: 記事の予約投稿
-  - `app/jobs/publish_post_job.rb` - 指定時刻に記事を自動公開
-  - `config/queue.yml` - ジョブキューの設定
-  - `config/environments/production.rb` - Solid Queue の設定
+  - [app/jobs/publish_post_job.rb](app/jobs/publish_post_job.rb) - 指定時刻に記事を自動公開
+  - [config/queue.yml](config/queue.yml) - ジョブキューの設定
+  - [config/environments/production.rb](config/environments/production.rb) - Solid Queue の設定
 - **Turbo Drive**: ページ遷移の高速化（アプリケーション全体でデフォルトで有効）
-  - `app/javascript/application.js` - Turbo のインポート
+  - [app/javascript/application.js](app/javascript/application.js) - Turbo のインポート
 
 #### コメント機能
 
@@ -24,12 +24,12 @@ Rails 8 の学習用リポジトリです。
 
 **使用している Rails 8 の機能:**
 - **Turbo Streams**: 複数箇所の同時更新（フォームクリア + 一覧追加 + カウント更新）
-  - `app/controllers/comments_controller.rb` - コメント投稿・削除
+  - [app/controllers/comments_controller.rb](app/controllers/comments_controller.rb) - コメント投稿・削除
 - **Turbo Frames**: インライン編集（表示 ⇄ 編集フォームの切り替え）
-  - `app/views/comments/edit.html.erb` - 編集ページ
-  - `app/views/comments/_comment.html.erb` - コメント部分テンプレート
+  - [app/views/comments/edit.html.erb](app/views/comments/edit.html.erb) - 編集ページ
+  - [app/views/comments/_comment.html.erb](app/views/comments/_comment.html.erb) - コメント部分テンプレート
 - **Stimulus**: アニメーション効果
-  - `app/javascript/controllers/comment_animation_controller.js` - 追加/削除時のアニメーション
+  - [app/javascript/controllers/comment_animation_controller.js](app/javascript/controllers/comment_animation_controller.js) - 追加/削除時のアニメーション
 
 **詳細な設計思想:**
 - [コメント機能で Turbo Streams と Turbo Frames を使い分ける理由](docs/why-comment-uses-turbo-streams-and-frames.md)
@@ -40,9 +40,9 @@ Rails 8 の学習用リポジトリです。
 
 **使用している Rails 8 の機能:**
 - **Action Text**: リッチテキストエディタ（商品説明）
-  - `app/models/product.rb` - `has_rich_text :description`
+  - [app/models/product.rb](app/models/product.rb) - `has_rich_text :description`
 - **Active Storage**: ファイルアップロード（商品画像）
-  - `app/models/product.rb` - `has_one_attached :featured_image`
+  - [app/models/product.rb](app/models/product.rb) - `has_one_attached :featured_image`
 
 ### リアルタイムチャット
 
@@ -50,9 +50,9 @@ WebSocket を使ったリアルタイムチャット機能です。
 
 **使用している Rails 8 の機能:**
 - **Action Cable + Solid Cable**: WebSocket によるリアルタイム通信
-  - `app/channels/chat_channel.rb` - チャットチャンネルの実装
-  - `app/javascript/controllers/chat_controller.js` - Stimulus でチャット UI を制御
-  - `config/cable.yml` - Solid Cable の設定
+  - [app/channels/chat_channel.rb](app/channels/chat_channel.rb) - チャットチャンネルの実装
+  - [app/javascript/controllers/chat_controller.js](app/javascript/controllers/chat_controller.js) - Stimulus でチャット UI を制御
+  - [config/cable.yml](config/cable.yml) - Solid Cable の設定
 
 ### ユーザー認証
 
@@ -60,9 +60,9 @@ WebSocket を使ったリアルタイムチャット機能です。
 
 **使用している Rails 8 の機能:**
 - **authenticate_by**: パスワード認証の新しい API
-  - `app/controllers/sessions_controller.rb`
+  - [app/controllers/sessions_controller.rb](app/controllers/sessions_controller.rb)
 - **rate_limit**: レート制限の組み込みサポート
-  - `app/controllers/sessions_controller.rb`
+  - [app/controllers/sessions_controller.rb](app/controllers/sessions_controller.rb)
 - **has_secure_password (BCrypt)**: パスワードのハッシュ化
 
 ### その他の Rails 8 機能
