@@ -36,80 +36,41 @@
 
 ## 実装手順
 
-### Phase 1: コメントモデルにブロードキャスト設定を追加
+### Phase 1: ブロードキャストのテストと実装（Red→Green）
 
-**目的**: コメントの作成・更新・削除時に、該当記事を閲覧中のユーザーに自動的にTurbo Streamをブロードキャストする
-
-**変更内容**:
-
-1. `app/models/comment.rb` に1行追加:
-   ```ruby
-   broadcasts_to :post
-   ```
-
-**効果**: 作成・更新・削除が自動的に全ユーザーにブロードキャストされる
-
-### Phase 2: 記事表示ページにTurbo Streamサブスクリプションを追加
-
-**目的**: ユーザーが記事ページを閲覧している間、該当記事のコメント変更をリアルタイムで受信できるようにする
+**目的**: TDD原則に従い、コメント変更とコメント数を全ユーザーにブロードキャスト
 
 **変更内容**:
 
-1. `app/views/posts/show.html.erb` のコメントセクション先頭（87行目あたり）に1行追加:
-   ```erb
-   <%= turbo_stream_from @post %>
-   ```
+1. `test/models/comment_test.rb` に `include Turbo::Broadcastable::TestHelper` と、作成・削除・コメント数のブロードキャストテストを追加（Red）
 
-**効果**: WebSocket接続を確立し、他ユーザーのコメント変更をリアルタイムで受信
+2. `app/models/comment.rb` に以下を追加:
+   - `broadcasts_to :post`
+   - `after_create_commit` / `after_destroy_commit` でコメント数をブロードキャスト
 
-### Phase 3: コメント数の更新をブロードキャスト
+3. `app/views/posts/_comment_count.html.erb` を新規作成（コメント数表示用パーシャル）
 
-**目的**: コメント数の更新もリアルタイムで全ユーザーに反映
+**効果**: テストが成功（Green）、作成・更新・削除とコメント数が自動ブロードキャスト
 
-**変更内容**:
+### Phase 2: DOM構造の調整
 
-1. `app/controllers/comments_controller.rb` の `create` アクションに追加:
-   ```ruby
-   @comment.broadcast_update_to(
-     @post,
-     target: "comment_count_#{@post.id}",
-     html: "(#{@post.comments.count})"
-   )
-   ```
-
-2. `destroy` アクションにも同様に追加:
-   ```ruby
-   Turbo::StreamsChannel.broadcast_update_to(
-     @post,
-     target: "comment_count_#{@post.id}",
-     html: "(#{@post.comments.count})"
-   )
-   ```
-
-**注**: `update` アクションは変更不要（コメント数が変わらないため）
-
-### Phase 4: テストの追加
-
-**目的**: ブロードキャスト機能が正しく動作することを検証
+**目的**: `broadcasts_to` のターゲットとDOM構造を一致させる
 
 **変更内容**:
 
-1. `test/models/comment_test.rb` にブロードキャストのテストを追加:
-   ```ruby
-   include Turbo::Broadcastable::TestHelper
+1. `app/views/posts/show.html.erb` の `div#comments` を `<div id="comments" class="space-y-2 mb-6">` に変更し、直下のdivを削除
 
-   test "broadcasts append on create" do
-     assert_broadcasts_to(posts(:one)) do
-       Comment.create!(post: posts(:one), user: users(:one), body: "New")
-     end
-   end
+**効果**: `broadcasts_to` が `div#comments` の直下に正しく追加される
 
-   test "broadcasts remove on destroy" do
-     assert_broadcasts_to(comments(:one).post) { comments(:one).destroy }
-   end
-   ```
+### Phase 3: 記事表示ページにTurbo Streamサブスクリプションを追加
 
-2. `test/controllers/comments_controller_test.rb` は既存のまま維持
+**目的**: WebSocket接続を確立し、リアルタイム更新を受信
+
+**変更内容**:
+
+1. `app/views/posts/show.html.erb` のコメントセクション先頭に `<%= turbo_stream_from @post %>` を追加
+
+**効果**: 他ユーザーのコメント変更をリアルタイムで受信
 
 ## 考慮事項
 
@@ -126,7 +87,8 @@
 
 ## 注意事項
 
-- Phase 1-2 でリアルタイム同期が動作開始。Phase 3-4 は補完的な実装
+- Phase 1 でTDDサイクル（Red→Green）を実践
+- Phase 2-3 でリアルタイム同期が動作開始
 - 各Phase後にテストを実行し、既存機能が壊れていないことを確認
 - 開発時は複数のブラウザウィンドウ/シークレットモードで動作確認
 - 既存のアニメーションが動作しない場合は、必要に応じて調整
