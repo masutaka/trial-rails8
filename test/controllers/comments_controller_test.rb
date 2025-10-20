@@ -20,6 +20,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     # Turbo Stream レスポンスを確認
     assert_match /<turbo-stream action="prepend" target="comments">/, response.body
     assert_match /<turbo-stream action="replace" target="new_comment">/, response.body
+    assert_match /<turbo-stream action="update" target="comment_count_#{@post.id}">/, response.body
     # 新規コメントの内容が含まれることを確認
     assert_match /新しいコメントです。/, response.body
   end
@@ -117,6 +118,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     # Turbo Stream レスポンスを確認
     assert_match /<turbo-stream action="remove" target="#{dom_id(@comment)}">/, response.body
+    assert_match /<turbo-stream action="update" target="comment_count_#{@comment.post.id}">/, response.body
   end
 
   test "should not destroy comment when not logged in" do
