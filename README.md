@@ -4,10 +4,71 @@ Rails 8 の学習用リポジトリです。
 
 ## 機能
 
-- ブログ投稿システム（記事の予約投稿機能付き）
-- コメント機能
-- ユーザー認証（BCrypt）
-- Solid Queue による Active Job の実行
+このリポジトリは **Rails 8** の主要機能を学習するために作成されています。
+
+### ブログ機能
+
+記事の作成・編集・削除、予約投稿が可能なブログシステムです。
+
+**使用している Rails 8 の機能:**
+- **Active Job + Solid Queue**: 記事の予約投稿
+  - `app/jobs/publish_post_job.rb` - 指定時刻に記事を自動公開
+  - `config/queue.yml` - ジョブキューの設定
+  - `config/environments/production.rb` - Solid Queue の設定
+- **Turbo Drive**: ページ遷移の高速化（アプリケーション全体でデフォルトで有効）
+  - `app/javascript/application.js` - Turbo のインポート
+
+#### コメント機能
+
+ブログ記事へのコメント投稿・編集・削除機能です。
+
+**使用している Rails 8 の機能:**
+- **Turbo Streams**: 複数箇所の同時更新（フォームクリア + 一覧追加 + カウント更新）
+  - `app/controllers/comments_controller.rb` - コメント投稿・削除
+- **Turbo Frames**: インライン編集（表示 ⇄ 編集フォームの切り替え）
+  - `app/views/comments/edit.html.erb` - 編集ページ
+  - `app/views/comments/_comment.html.erb` - コメント部分テンプレート
+- **Stimulus**: アニメーション効果
+  - `app/javascript/controllers/comment_animation_controller.js` - 追加/削除時のアニメーション
+
+**詳細な設計思想:**
+- [コメント機能で Turbo Streams と Turbo Frames を使い分ける理由](docs/why-comment-uses-turbo-streams-and-frames.md)
+
+### 商品管理（Product）
+
+商品情報の登録・編集機能です。
+
+**使用している Rails 8 の機能:**
+- **Action Text**: リッチテキストエディタ（商品説明）
+  - `app/models/product.rb` - `has_rich_text :description`
+- **Active Storage**: ファイルアップロード（商品画像）
+  - `app/models/product.rb` - `has_one_attached :featured_image`
+
+### リアルタイムチャット
+
+WebSocket を使ったリアルタイムチャット機能です。
+
+**使用している Rails 8 の機能:**
+- **Action Cable + Solid Cable**: WebSocket によるリアルタイム通信
+  - `app/channels/chat_channel.rb` - チャットチャンネルの実装
+  - `app/javascript/controllers/chat_controller.js` - Stimulus でチャット UI を制御
+  - `config/cable.yml` - Solid Cable の設定
+
+### ユーザー認証
+
+ログイン・ログアウト機能です。
+
+**使用している Rails 8 の機能:**
+- **authenticate_by**: パスワード認証の新しい API
+  - `app/controllers/sessions_controller.rb`
+- **rate_limit**: レート制限の組み込みサポート
+  - `app/controllers/sessions_controller.rb`
+- **has_secure_password (BCrypt)**: パスワードのハッシュ化
+
+### その他の Rails 8 機能
+
+- **Mission Control Jobs**: Active Job の Web UI 監視ツール
+  - http://localhost:3000/jobs で利用可能
 
 ## セットアップ
 
@@ -53,3 +114,33 @@ Active Job の内部構造（ジョブキュー、実行状態、スケジュー
 [ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/cable_schema.rb)
 
 Action Cable の内部構造（WebSocketメッセージ、チャンネル、ブロードキャストなど）を確認できます。
+
+## 参考資料
+
+### Rails ガイド（日本語）
+
+- [Active Job の基礎](https://railsguides.jp/active_job_basics.html)
+- [Action Cable の概要](https://railsguides.jp/action_cable_overview.html)
+- [Action Text の概要](https://railsguides.jp/action_text_overview.html)
+- [Active Storage の概要](https://railsguides.jp/active_storage_overview.html)
+- [Rails のキャッシュ機構](https://railsguides.jp/caching_with_rails.html)
+- [セキュリティガイド](https://railsguides.jp/security.html) - has_secure_password など
+
+### Hotwire（Turbo & Stimulus）
+
+- [Hotwire 公式サイト](https://hotwired.dev/)
+- [Turbo Handbook](https://turbo.hotwired.dev/handbook/introduction)
+  - [Turbo Drive](https://turbo.hotwired.dev/handbook/drive) - ページ遷移の高速化
+  - [Turbo Frames](https://turbo.hotwired.dev/handbook/frames) - 部分的なページ更新
+  - [Turbo Streams](https://turbo.hotwired.dev/handbook/streams) - 複数箇所の同時更新
+- [Stimulus Handbook](https://stimulus.hotwired.dev/handbook/introduction)
+
+### Solid Trifecta（Rails 8 の新機能）
+
+- [Solid Queue（GitHub）](https://github.com/rails/solid_queue) - データベースベースの Active Job バックエンド
+- [Solid Cache（GitHub）](https://github.com/rails/solid_cache) - データベースベースのキャッシュストア（このリポジトリでは未使用）
+- [Solid Cable（GitHub）](https://github.com/rails/solid_cable) - データベースベースの Action Cable アダプター
+
+### その他のツール
+
+- [Mission Control Jobs（GitHub）](https://github.com/rails/mission_control-jobs) - Active Job の監視ツール
