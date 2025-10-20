@@ -85,6 +85,7 @@
 
   <!-- コメントセクション -->
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <%= turbo_stream_from @post %>
     <h2 class="text-xl font-bold text-gray-900 mb-4">
       コメント
       <span id="comment_count_<%= @post.id %>" class="text-sm font-normal text-gray-500">(<%= @post.comments.count %>)</span>
