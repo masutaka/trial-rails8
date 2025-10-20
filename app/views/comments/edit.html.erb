@@ -13,8 +13,10 @@
     </div>
   </nav>
 
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">コメント編集</h1>
-    <%= render "form", comment: @comment, url: comment_path(@comment), submit_label: "更新" %>
-  </div>
+  <%= turbo_frame_tag dom_id(@comment) do %>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">コメント編集</h1>
+      <%= render "form", comment: @comment, url: comment_path(@comment), submit_label: "更新" %>
+    </div>
+  <% end %>
 </div>

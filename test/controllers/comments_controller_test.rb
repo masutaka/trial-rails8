@@ -1,6 +1,8 @@
 require "test_helper"
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
+  include ActionView::RecordIdentifier # for dom_id helper
+
   setup do
     @alice = users(:alice)
     @bob = users(:bob)
@@ -16,7 +18,13 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
       post post_comments_url(@post), params: { comment: { body: "新しいコメントです。" } }
     end
 
-    assert_redirected_to post_url(@post)
+    assert_response :ok
+    # Turbo Stream レスポンスを確認
+    assert_match /<turbo-stream action="prepend" target="comments">/, response.body
+    assert_match /<turbo-stream action="replace" target="new_comment">/, response.body
+    assert_match /<turbo-stream action="update" target="comment_count_#{@post.id}">/, response.body
+    # 新規コメントの内容が含まれることを確認
+    assert_match /新しいコメントです。/, response.body
   end
 
   test "should not create comment when not logged in" do
@@ -63,7 +71,11 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "should update comment when owner" do
     log_in_as(@alice)
     patch comment_url(@comment), params: { comment: { body: "更新されたコメント" } }
-    assert_redirected_to post_url(@comment.post)
+    assert_response :ok
+
+    # Turbo Frame レスポンスを確認
+    assert_match /id="#{dom_id(@comment)}"/, response.body
+    assert_match /更新されたコメント/, response.body
 
     @comment.reload
     assert_equal "更新されたコメント", @comment.body
@@ -105,7 +117,10 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
       delete comment_url(@comment)
     end
 
-    assert_redirected_to post_url(@comment.post)
+    assert_response :ok
+    # Turbo Stream レスポンスを確認
+    assert_match /<turbo-stream action="remove" target="#{dom_id(@comment)}">/, response.body
+    assert_match /<turbo-stream action="update" target="comment_count_#{@comment.post.id}">/, response.body
   end
 
   test "should not destroy comment when not logged in" do
