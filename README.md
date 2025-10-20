@@ -10,7 +10,6 @@ Rails 8 の学習用リポジトリです。
 
 記事の作成・編集・削除、予約投稿が可能なブログシステムです。
 
-**使用している Rails 8 の機能:**
 - **Active Job + Solid Queue**: 記事の予約投稿
   - [app/jobs/publish_post_job.rb](app/jobs/publish_post_job.rb) - 指定時刻に記事を自動公開
   - [config/queue.yml](config/queue.yml) - ジョブキューの設定
@@ -22,7 +21,6 @@ Rails 8 の学習用リポジトリです。
 
 ブログ記事へのコメント投稿・編集・削除機能です。
 
-**使用している Rails 8 の機能:**
 - **Turbo Streams**: 複数箇所の同時更新（フォームクリア + 一覧追加 + カウント更新）
   - [app/controllers/comments_controller.rb](app/controllers/comments_controller.rb) - コメント投稿・削除
 - **Turbo Frames**: インライン編集（表示 ⇄ 編集フォームの切り替え）
@@ -38,7 +36,6 @@ Rails 8 の学習用リポジトリです。
 
 商品情報の登録・編集機能です。
 
-**使用している Rails 8 の機能:**
 - **Action Text**: リッチテキストエディタ（商品説明）
   - [app/models/product.rb](app/models/product.rb) - `has_rich_text :description`
 - **Active Storage**: ファイルアップロード（商品画像）
@@ -48,7 +45,6 @@ Rails 8 の学習用リポジトリです。
 
 WebSocket を使ったリアルタイムチャット機能です。
 
-**使用している Rails 8 の機能:**
 - **Action Cable + Solid Cable**: WebSocket によるリアルタイム通信
   - [app/channels/chat_channel.rb](app/channels/chat_channel.rb) - チャットチャンネルの実装
   - [app/javascript/controllers/chat_controller.js](app/javascript/controllers/chat_controller.js) - Stimulus でチャット UI を制御
@@ -58,7 +54,6 @@ WebSocket を使ったリアルタイムチャット機能です。
 
 ログイン・ログアウト機能です。
 
-**使用している Rails 8 の機能:**
 - **authenticate_by**: パスワード認証の新しい API
   - [app/controllers/sessions_controller.rb](app/controllers/sessions_controller.rb)
 - **rate_limit**: レート制限の組み込みサポート
