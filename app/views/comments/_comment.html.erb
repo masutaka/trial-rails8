@@ -1,4 +1,4 @@
-<%= turbo_frame_tag dom_id(comment) do %>
+<%= turbo_frame_tag dom_id(comment), data: { controller: "comment-animation", action: "turbo:before-stream-render@document->comment-animation#beforeStreamRender" } do %>
   <div class="border-b border-gray-200 py-4 last:border-b-0">
     <div class="flex items-start justify-between mb-2">
       <div class="flex items-center space-x-2">

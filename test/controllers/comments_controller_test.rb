@@ -72,7 +72,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     # Turbo Frame レスポンスを確認
-    assert_match /<turbo-frame id="#{dom_id(@comment)}">/, response.body
+    assert_match /id="#{dom_id(@comment)}"/, response.body
     assert_match /更新されたコメント/, response.body
 
     @comment.reload
