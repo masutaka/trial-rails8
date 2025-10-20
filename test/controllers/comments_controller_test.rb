@@ -68,7 +68,11 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "should update comment when owner" do
     log_in_as(@alice)
     patch comment_url(@comment), params: { comment: { body: "更新されたコメント" } }
-    assert_redirected_to post_url(@comment.post)
+    assert_response :ok
+
+    # Turbo Frame レスポンスを確認
+    assert_match /<turbo-frame id="#{dom_id(@comment)}">/, response.body
+    assert_match /更新されたコメント/, response.body
 
     @comment.reload
     assert_equal "更新されたコメント", @comment.body

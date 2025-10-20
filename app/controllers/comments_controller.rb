@@ -27,7 +27,7 @@ class CommentsController < ApplicationController
   # PATCH/PUT /comments/:id
   def update
     if @comment.update(comment_params)
-      redirect_to post_url(@comment.post), notice: "Comment was successfully updated."
+      render partial: "comments/comment", locals: { comment: @comment }
     else
       render :edit, status: :unprocessable_entity
     end
