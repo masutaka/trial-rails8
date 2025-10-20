@@ -13,51 +13,70 @@
 
 ## 実装方針
 
-**Turbo Frames** を採用する
+**Turbo Frames と Turbo Streams を併用する**
 
-### Turbo Framesを選択する理由
+### Turbo Frames の使用箇所
 
-1. **シンプルな実装**: 画面遷移を伴わない部分更新に最適
+- コメント編集: 各コメントを個別のフレームとして扱い、インライン編集を実現
+
+### Turbo Streams の使用箇所
+
+- コメント投稿: フォームのクリアとコメント一覧への追加を同時に行う
+- コメント削除: DOM から要素を完全に削除
+- コメント数更新: 投稿・削除時にコメント数を動的に更新
+
+### この組み合わせを選択する理由
+
+1. **複数箇所の同時更新**: コメント投稿時にフォームクリアと一覧追加を同時に実現
 2. **状態管理不要**: JavaScriptで複雑な状態管理をする必要がない
 3. **Rails標準**: Rails 7以降で標準搭載されている（既に `@hotwired/turbo-rails` がインポートされている - app/javascript/application.js:2）
 4. **段階的な実装**: 各操作（投稿/編集/削除）を個別に段階的に実装できる
 5. **テスト容易性**: Railsのテストツールで十分にテスト可能
-
-### Turbo Streamsを使わない理由
-
-- Turbo Streamsはリアルタイム更新や複数箇所の同時更新に適している
-- 今回は単一のコメント操作のみであり、Turbo Framesで十分対応可能
-- よりシンプルな実装で保守性が高い
+6. **技術の一貫性**: すべて Hotwire の技術スタックで統一
 
 ## 実装手順
 
-### Phase 1: コメント投稿のTurbo Frames対応
+### Phase 1: コメント投稿のTurbo Streams対応
 
-**目的**: 新規コメント投稿時の画面遷移を防ぐ
+**目的**: 新規コメント投稿時の画面遷移を防ぎ、フォームをクリアしてコメント一覧に追加する
 
 **変更内容**:
 
 1. `app/views/posts/show.html.erb`:
-   - コメントフォームエリアを `turbo_frame_tag "new_comment"` で囲む（107-110行目あたり）
-   - コメント一覧エリアを `turbo_frame_tag "comments"` で囲む（94-102行目あたり）
+   - コメントフォームエリアを `<div id="new_comment">` で囲む（107-110行目あたり）
+   - コメント一覧エリアを `<div id="comments">` で囲む（94-102行目あたり）
 
 2. `app/views/comments/_form.html.erb`:
-   - フォームに `data: { turbo_frame: "comments" }` を追加（投稿成功時にコメント一覧を更新するため）
+   - フォームは通常の `form_with` のまま（`data` 属性の追加不要）
 
 3. `app/controllers/comments_controller.rb` の `create` アクション:
-   - 成功時: コメント一覧とフォームをレンダリングする Turbo Frame レスポンスを返す
-   - 失敗時: エラーメッセージ付きのフォームを `turbo_frame_tag "new_comment"` 内でレンダリング
+   - 成功時: Turbo Stream で複数箇所を同時更新
+     ```ruby
+     render turbo_stream: [
+       turbo_stream.prepend("comments", partial: "comments/comment", locals: { comment: @comment }),
+       turbo_stream.replace("new_comment", partial: "comments/form", locals: { comment: Comment.new, post: @post })
+     ]
+     ```
+   - 失敗時: フォームをエラーメッセージ付きで再表示
+     ```ruby
+     render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/form", locals: { comment: @comment, post: @post }),
+            status: :unprocessable_entity
+     ```
 
-**コミットメッセージ**: `Add Turbo Frame for comment creation to prevent page navigation`
+**コミットメッセージ**: `Add Turbo Stream for comment creation to prevent page navigation`
 
 ### Phase 2: コメント編集のTurbo Frames対応
 
-**目的**: コメント編集時の画面遷移を防ぐ
+**目的**: コメント編集時の画面遷移を防ぎ、インライン編集を実現する
 
 **変更内容**:
 
 1. `app/views/comments/_comment.html.erb`:
    - 各コメントを `turbo_frame_tag dom_id(comment)` で囲む
+   - 編集リンクに `data: { turbo_frame: dom_id(comment) }` を追加（フレーム内で編集フォームを読み込むため）
+     ```erb
+     <%= link_to "Edit", edit_comment_path(comment), data: { turbo_frame: dom_id(comment) } %>
+     ```
 
 2. `app/views/comments/edit.html.erb`:
    - 編集フォームを `turbo_frame_tag dom_id(@comment)` で囲む
@@ -69,20 +88,23 @@
 
 **コミットメッセージ**: `Add Turbo Frame for comment editing to prevent page navigation`
 
-### Phase 3: コメント削除のTurbo Frames対応
+### Phase 3: コメント削除のTurbo Streams対応
 
-**目的**: コメント削除時の画面遷移を防ぐ
+**目的**: コメント削除時の画面遷移を防ぎ、DOM から要素を完全に削除する
 
 **変更内容**:
 
 1. `app/views/comments/_comment.html.erb`:
-   - 削除ボタンに `data: { turbo_frame: dom_id(comment) }` を追加（既にPhase 2でコメント全体がTurbo Frame内にある）
+   - 削除ボタンは通常の `button_to` のまま（特別な `data` 属性は不要）
 
 2. `app/controllers/comments_controller.rb` の `destroy` アクション:
-   - 削除成功時: 空の Turbo Frame を返す（`render turbo_stream: turbo_stream.remove(dom_id(@comment))` の代わりに、Turbo Frameで空のコンテンツを返す）
-   - または、Turbo Streamsの `remove` アクションを使用する（こちらの方がシンプル）
+   - 削除成功時: Turbo Stream の `remove` を使用して DOM から要素を削除
+     ```ruby
+     @comment.destroy
+     render turbo_stream: turbo_stream.remove(dom_id(@comment))
+     ```
 
-**注意**: 削除時は Turbo Streams の `remove` を使う方が自然なため、この Phase では Turbo Streams も併用する
+**理由**: Turbo Stream の `remove` を使うことで、DOM から要素が完全に削除され、空フレームが残る問題を回避できる
 
 **コミットメッセージ**: `Add Turbo Stream for comment deletion to prevent page navigation`
 
@@ -93,31 +115,59 @@
 **変更内容**:
 
 1. `app/views/posts/show.html.erb`:
-   - コメント数表示部分を `turbo_frame_tag "comment_count"` または `id="comment_count"` で識別可能にする（88-90行目あたり）
+   - コメント数表示部分に `id="comment_count_#{@post.id}"` を追加（88-90行目あたり）
+     ```erb
+     <span id="comment_count_<%= @post.id %>"><%= @post.comments.count %></span>
+     ```
 
 2. `app/controllers/comments_controller.rb`:
-   - `create` と `destroy` アクションで、Turbo Streams を使ってコメント数を更新する
-   - または、JavaScript Stimulusコントローラーでクライアント側でカウントを更新する
+   - `create` アクションで、Phase 1 の Turbo Stream にコメント数更新を追加:
+     ```ruby
+     render turbo_stream: [
+       turbo_stream.prepend("comments", partial: "comments/comment", locals: { comment: @comment }),
+       turbo_stream.replace("new_comment", partial: "comments/form", locals: { comment: Comment.new, post: @post }),
+       turbo_stream.update("comment_count_#{@post.id}", @post.comments.count.to_s)
+     ]
+     ```
+   - `destroy` アクションで、Phase 3 の Turbo Stream にコメント数更新を追加:
+     ```ruby
+     render turbo_stream: [
+       turbo_stream.remove(dom_id(@comment)),
+       turbo_stream.update("comment_count_#{@post.id}", @post.comments.count.to_s)
+     ]
+     ```
 
-**コミットメッセージ**: `Add dynamic comment count update with Turbo`
+**理由**: Turbo Stream に統一することで、技術スタックの一貫性が保たれ、サーバー側で正確なコメント数を計算できる
+
+**コミットメッセージ**: `Add dynamic comment count update with Turbo Stream`
 
 ### Phase 5: テストの追加と修正
 
-**目的**: 既存のテストを修正し、Turbo Frames の動作を検証する
+**目的**: 既存のテストを修正し、Turbo Streams/Frames の動作を検証する
 
 **変更内容**:
 
 1. `test/controllers/comments_controller_test.rb`:
-   - リダイレクトのアサーションを、Turbo Frame レスポンスのアサーションに変更
-   - ステータスコードが 200 OK になることを確認
-   - レスポンスに期待する Turbo Frame が含まれることを確認
+   - `create` アクションのテスト:
+     - リダイレクトのアサーションを削除
+     - ステータスコードが 200 OK になることを確認
+     - レスポンスに `<turbo-stream action="prepend" target="comments">` が含まれることを確認
+     - レスポンスに `<turbo-stream action="replace" target="new_comment">` が含まれることを確認
+     - レスポンスに `<turbo-stream action="update" target="comment_count_">` が含まれることを確認
+     - 新規コメントの内容が含まれることを確認
+   - `update` アクションのテスト:
+     - リダイレクトのアサーションを削除
+     - Turbo Frame レスポンスが返されることを確認
+   - `destroy` アクションのテスト:
+     - リダイレクトのアサーションを削除
+     - レスポンスに `<turbo-stream action="remove">` が含まれることを確認
+     - レスポンスに `<turbo-stream action="update" target="comment_count_">` が含まれることを確認
 
-2. システムテストの追加（必要に応じて）:
-   - コメント投稿後、ページが遷移せずコメントが表示されることを確認
-   - コメント編集後、ページが遷移せずコメントが更新されることを確認
-   - コメント削除後、ページが遷移せずコメントが削除されることを確認
+2. システムテストは作成しない:
+   - ブラウザでの画面遷移抑止は手動テストで確認する
+   - コントローラテストでレスポンス内容を十分に検証することで品質を担保する
 
-**コミットメッセージ**: `Update tests for Turbo Frame comment operations`
+**コミットメッセージ**: `Update tests for Turbo Stream/Frame comment operations`
 
 ## 技術的な詳細
 
@@ -131,17 +181,38 @@
 ### コントローラーでの対応
 
 ```ruby
-# 成功時の例
+# Turbo Stream を使った例（コメント投稿）
 def create
+  @comment = @post.comments.build(comment_params)
   if @comment.save
-    render partial: "comments/comment", locals: { comment: @comment },
-           layout: false,
-           formats: [:html]
+    render turbo_stream: [
+      turbo_stream.prepend("comments", partial: "comments/comment", locals: { comment: @comment }),
+      turbo_stream.replace("new_comment", partial: "comments/form", locals: { comment: Comment.new, post: @post }),
+      turbo_stream.update("comment_count_#{@post.id}", @post.comments.count.to_s)
+    ]
   else
-    render :new, status: :unprocessable_entity
+    render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/form", locals: { comment: @comment, post: @post }),
+           status: :unprocessable_entity
   end
 end
+
+# Turbo Stream を使った例（コメント削除）
+def destroy
+  @comment.destroy
+  render turbo_stream: [
+    turbo_stream.remove(dom_id(@comment)),
+    turbo_stream.update("comment_count_#{@post.id}", @post.comments.count.to_s)
+  ]
+end
 ```
+
+### Turbo Streams の主なアクション
+
+- `prepend`: 指定した要素の先頭に追加
+- `append`: 指定した要素の末尾に追加
+- `replace`: 指定した要素を置き換え
+- `update`: 指定した要素の内容を更新
+- `remove`: 指定した要素を削除
 
 ### レイアウトの考慮事項
 
