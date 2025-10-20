@@ -20,8 +20,11 @@
 #  user_id  (user_id => users.id) ON DELETE => cascade
 #
 require "test_helper"
+require "turbo/broadcastable/test_helper"
 
 class CommentTest < ActiveSupport::TestCase
+  include Turbo::Broadcastable::TestHelper
+
   def setup
     @comment = comments(:one)
   end
@@ -75,5 +78,27 @@ class CommentTest < ActiveSupport::TestCase
     @comment.user = nil
     assert_not @comment.valid?
     assert_includes @comment.errors[:user], "must exist"
+  end
+
+  # Turbo Streams ブロードキャストのテスト
+  test "should broadcast append and comment count on create" do
+    post = posts(:one)
+    user = users(:alice)
+
+    assert_turbo_stream_broadcasts(post, count: 2) do
+      Comment.create!(post: post, user: user, body: "New comment")
+    end
+  end
+
+  test "should broadcast replace on update" do
+    assert_turbo_stream_broadcasts(@comment.post, count: 1) do
+      @comment.update!(body: "Updated comment body")
+    end
+  end
+
+  test "should broadcast remove and comment count on destroy" do
+    assert_turbo_stream_broadcasts(@comment.post, count: 2) do
+      @comment.destroy
+    end
   end
 end
