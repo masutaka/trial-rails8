@@ -31,7 +31,10 @@ class Comment < ApplicationRecord
                         target: "comments",
                         partial: "comments/comment",
                         locals: { comment: self, allow_actions: false }
-    broadcast_replace_to post, target: "comment_count", partial: "posts/comment_count", locals: { post: post }
+    broadcast_replace_to post,
+                         target: "comment_count_#{post.id}",
+                         partial: "posts/comment_count",
+                         locals: { post: post }
     broadcast_replace_to [ post, user ],
                          target: ActionView::RecordIdentifier.dom_id(self),
                          partial: "comments/comment",
@@ -52,6 +55,9 @@ class Comment < ApplicationRecord
   # 削除時のリアルタイムブロードキャスト: コメントを削除 + コメント数を更新
   after_destroy_commit do
     broadcast_remove_to post
-    broadcast_replace_to post, target: "comment_count", partial: "posts/comment_count", locals: { post: post }
+    broadcast_replace_to post,
+                         target: "comment_count_#{post.id}",
+                         partial: "posts/comment_count",
+                         locals: { post: post }
   end
 end

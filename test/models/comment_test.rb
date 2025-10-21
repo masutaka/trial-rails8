@@ -100,6 +100,20 @@ class CommentTest < ActiveSupport::TestCase
       end
     end
 
+    test "should broadcast comment count with post scoped target on create" do
+      post = posts(:one)
+      user = users(:alice)
+
+      broadcasts = capture_turbo_stream_broadcasts(post) do
+        Comment.create!(post: post, user: user, body: "コメント増加テスト")
+      end
+
+      replace_broadcast = broadcasts.find do |broadcast|
+        broadcast["action"] == "replace" && broadcast["target"] == "comment_count_#{post.id}"
+      end
+      assert replace_broadcast, "comment count turbo stream should target comment_count_#{post.id}"
+    end
+
     test "should broadcast replace on update" do
       assert_turbo_stream_broadcasts(@comment.post, count: 1) do
         @comment.update!(body: "Updated comment body")
