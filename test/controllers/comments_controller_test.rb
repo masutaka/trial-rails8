@@ -20,7 +20,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     # Turbo Stream レスポンスを確認
-    assert_match /<turbo-stream action="prepend" target="comments">/, response.body
+    assert_match /<turbo-stream action="append" target="comments">/, response.body
     assert_match /<turbo-stream action="replace" target="new_comment">/, response.body
     assert_match /<turbo-stream action="update" target="comment_count_#{@post.id}">/, response.body
     # 新規コメントの内容が含まれることを確認

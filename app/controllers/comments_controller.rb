@@ -11,7 +11,7 @@ class CommentsController < ApplicationController
 
     if @comment.save
       render turbo_stream: [
-        turbo_stream.prepend("comments", partial: "comments/comment", locals: { comment: @comment }),
+        turbo_stream.append("comments", partial: "comments/comment", locals: { comment: @comment }),
         turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post }),
         turbo_stream.update("comment_count_#{@post.id}", "(#{@post.comments.count})")
       ]
