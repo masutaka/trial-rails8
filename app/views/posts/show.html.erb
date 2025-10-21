@@ -96,11 +96,7 @@
 
     <!-- コメント一覧 -->
     <div id="comments" class="space-y-2 mb-6">
-      <% if @post.comments.any? %>
-        <%= render @post.comments.order(created_at: :asc) %>
-      <% else %>
-        <p class="text-gray-500 text-sm py-4">まだコメントがありません。最初のコメントを投稿しましょう！</p>
-      <% end %>
+      <%= render @post.comments.order(created_at: :asc) if @post.comments.any? %>
     </div>
 
     <!-- 新規コメントフォーム -->
