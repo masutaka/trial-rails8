@@ -10,11 +10,7 @@ class CommentsController < ApplicationController
     @comment.user = Current.user
 
     if @comment.save
-      render turbo_stream: [
-        turbo_stream.prepend("comments", partial: "comments/comment", locals: { comment: @comment }),
-        turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post }),
-        turbo_stream.update("comment_count_#{@post.id}", "(#{@post.comments.count})")
-      ]
+      render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post })
     else
       render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post, comment: @comment }),
              status: :unprocessable_entity
@@ -36,13 +32,8 @@ class CommentsController < ApplicationController
 
   # DELETE /comments/:id
   def destroy
-    @post = @comment.post
     @comment.destroy
-
-    render turbo_stream: [
-      turbo_stream.remove(helpers.dom_id(@comment)),
-      turbo_stream.update("comment_count_#{@post.id}", "(#{@post.comments.count})")
-    ]
+    head :ok
   end
 
   private

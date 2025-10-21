@@ -1,3 +1,4 @@
+<% allow_actions = local_assigns.fetch(:allow_actions) { comment.user == Current.user } %>
 <%= turbo_frame_tag dom_id(comment), data: { controller: "comment-animation", action: "turbo:before-stream-render@document->comment-animation#beforeStreamRender" } do %>
   <div class="border-b border-gray-200 py-4 last:border-b-0">
     <div class="flex items-start justify-between mb-2">
@@ -20,7 +21,7 @@
         </div>
       </div>
 
-      <% if comment.user == Current.user %>
+      <% if allow_actions %>
         <div class="flex items-center space-x-2">
           <%= link_to "編集", edit_comment_path(comment), data: { turbo_frame: dom_id(comment) }, class: "text-sm text-blue-600 hover:text-blue-800" %>
           <%= button_to "削除", comment_path(comment), method: :delete, data: { turbo_confirm: "本当に削除しますか？" }, class: "text-sm text-red-600 hover:text-red-800" %>
