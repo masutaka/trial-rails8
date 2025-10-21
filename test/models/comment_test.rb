@@ -106,6 +106,51 @@ class CommentTest < ActiveSupport::TestCase
       end
     end
 
+    test "should hide owner actions in broadcast visible to other users" do
+      post = posts(:one)
+      author = users(:alice)
+      comment_body = "新しいリアルタイムコメントです"
+      session = Session.new(user: author)
+
+      created_comment = nil
+      broadcasts = nil
+      Current.set(session: session) do
+        broadcasts = capture_turbo_stream_broadcasts(post) do
+          created_comment = Comment.create!(post: post, user: author, body: comment_body)
+        end
+      end
+
+      append_broadcast = broadcasts.find { |broadcast| broadcast["action"] == "append" && broadcast["target"] == "comments" }
+      assert append_broadcast, "append broadcast for comments target should be present"
+      html = append_broadcast.inner_html
+      assert_includes html, comment_body
+      assert_not_includes html, "編集"
+      assert_not_includes html, "削除"
+    end
+
+    test "should show owner actions via user scoped broadcast" do
+      post = posts(:one)
+      author = users(:alice)
+      comment_body = "所有者専用アクション確認コメント"
+      session = Session.new(user: author)
+
+      created_comment = nil
+      broadcasts = nil
+      Current.set(session: session) do
+        broadcasts = capture_turbo_stream_broadcasts([ post, author ]) do
+          created_comment = Comment.create!(post: post, user: author, body: comment_body)
+        end
+      end
+
+      dom_id = ActionView::RecordIdentifier.dom_id(created_comment)
+      replace_broadcast = broadcasts.find { |broadcast| broadcast["action"] == "replace" && broadcast["target"] == dom_id }
+      assert replace_broadcast, "owner scoped stream should replace the comment frame with owner actions"
+      html = replace_broadcast.inner_html
+      assert_includes html, comment_body
+      assert_includes html, "編集"
+      assert_includes html, "削除"
+    end
+
     test "should broadcast remove and comment count on destroy" do
       assert_turbo_stream_broadcasts(@comment.post, count: 2) do
         @comment.destroy

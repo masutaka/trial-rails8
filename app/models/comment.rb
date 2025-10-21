@@ -27,13 +27,26 @@ class Comment < ApplicationRecord
 
   # 作成時のリアルタイムブロードキャスト: コメントを追加 + コメント数を更新
   after_create_commit do
-    broadcast_append_to post, target: "comments"
+    broadcast_append_to post,
+                        target: "comments",
+                        partial: "comments/comment",
+                        locals: { comment: self, allow_actions: false }
     broadcast_replace_to post, target: "comment_count", partial: "posts/comment_count", locals: { post: post }
+    broadcast_replace_to [ post, user ],
+                         target: ActionView::RecordIdentifier.dom_id(self),
+                         partial: "comments/comment",
+                         locals: { comment: self, allow_actions: true }
   end
 
   # 更新時のリアルタイムブロードキャスト: コメントを置き換え
   after_update_commit do
-    broadcast_replace_to post
+    broadcast_replace_to post,
+                         partial: "comments/comment",
+                         locals: { comment: self, allow_actions: false }
+    broadcast_replace_to [ post, user ],
+                         target: ActionView::RecordIdentifier.dom_id(self),
+                         partial: "comments/comment",
+                         locals: { comment: self, allow_actions: true }
   end
 
   # 削除時のリアルタイムブロードキャスト: コメントを削除 + コメント数を更新
