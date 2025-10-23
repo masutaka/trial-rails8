@@ -2,12 +2,12 @@
 #
 # Table name: notifications
 #
-#  id         :integer          not null, primary key
+#  id         :bigint           not null, primary key
 #  read       :boolean          default(FALSE), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  post_id    :integer          not null
-#  user_id    :integer          not null
+#  post_id    :bigint           not null
+#  user_id    :bigint           not null
 #
 # Indexes
 #
@@ -18,8 +18,8 @@
 #
 # Foreign Keys
 #
-#  post_id  (post_id => posts.id) ON DELETE => cascade
-#  user_id  (user_id => users.id) ON DELETE => cascade
+#  fk_rails_...  (post_id => posts.id) ON DELETE => cascade
+#  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 require "test_helper"
 
