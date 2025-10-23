@@ -85,6 +85,12 @@ docker compose up -d
 bin/setup
 ```
 
+3. （必要に応じて）サンプルデータの投入:
+
+```bash
+bin/rails db:seed
+```
+
 http://localhost:3000 から、アプリケーションにアクセスできます。
 
 ### MySQL コンテナの管理
