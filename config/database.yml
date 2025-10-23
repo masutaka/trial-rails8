@@ -30,8 +30,17 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: trial_rails8_test
+  primary:
+    <<: *default
+    database: trial_rails8_test
+  queue:
+    <<: *default
+    database: trial_rails8_test_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: trial_rails8_test_cable
+    migrations_paths: db/cable_migrate
 
 production:
   primary:
