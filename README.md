@@ -67,13 +67,37 @@ WebSocket を使ったリアルタイムチャット機能です。
 
 ## セットアップ
 
-依存関係のインストール、データベース作成、サーバー起動まで。
+### 前提条件
+
+- Docker と Docker Compose がインストールされていること
+
+### 手順
+
+1. MySQL コンテナを起動:
+
+```bash
+docker compose up -d
+```
+
+2. 依存関係のインストール、データベース作成、サーバー起動:
 
 ```bash
 bin/setup
 ```
 
+3. （必要に応じて）サンプルデータの投入:
+
+```bash
+bin/rails db:seed
+```
+
 http://localhost:3000 から、アプリケーションにアクセスできます。
+
+### MySQL コンテナの管理
+
+- コンテナの起動: `docker compose up -d`
+- コンテナの停止: `docker compose down`
+- データの削除（完全リセット）: `docker compose down -v`
 
 ## Active Job の監視
 

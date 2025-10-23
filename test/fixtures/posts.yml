@@ -4,15 +4,15 @@
 #
 # Table name: posts
 #
-#  id           :integer          not null, primary key
-#  body         :text
+#  id           :bigint           not null, primary key
+#  body         :text(65535)
 #  published    :boolean          default(FALSE), not null
 #  published_at :datetime
-#  slug         :string
-#  title        :string
+#  slug         :string(255)
+#  title        :string(255)
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  user_id      :integer          not null
+#  user_id      :bigint           not null
 #
 # Indexes
 #
@@ -23,7 +23,7 @@
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id) ON DELETE => cascade
+#  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 alice_old_post:
   user: alice
