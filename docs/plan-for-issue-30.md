@@ -24,11 +24,13 @@
 ### 移行が必要な箇所
 
 1. Gemfile の依存関係
-2. Active Job アダプターの設定（development/production）
+2. Active Job アダプターの設定（development/production/test）
 3. ルーティング（Mission Control → Sidekiq Web UI）
 4. Docker Compose 設定（Redis コンテナの追加）
-5. 設定ファイルの削除・追加
-6. README.md の更新
+5. 設定ファイルの削除・追加（Sidekiq 設定、initializer）
+6. CI 設定（GitHub Actions で Redis サービスを有効化）
+7. Procfile.dev（bin/jobs → bin/sidekiq）
+8. README.md の更新
 
 ## 実装方針
 
@@ -121,41 +123,7 @@
 
 **コミットメッセージ**: `Add Sidekiq configuration file`
 
-### Phase 4: Active Job アダプターの変更
-
-**目的**: Active Job のバックエンドを Solid Queue から Sidekiq に変更
-
-**変更内容**:
-
-1. `config/environments/development.rb` の変更:
-   - 73-74行目を削除:
-     ```ruby
-     config.active_job.queue_adapter = :solid_queue
-     config.solid_queue.connects_to = { database: { writing: :queue } }
-     ```
-   - 以下に置き換え:
-     ```ruby
-     config.active_job.queue_adapter = :sidekiq
-     ```
-
-2. `config/environments/production.rb` の変更:
-   - 53-54行目を削除:
-     ```ruby
-     config.active_job.queue_adapter = :solid_queue
-     config.solid_queue.connects_to = { database: { writing: :queue } }
-     ```
-   - 以下に置き換え:
-     ```ruby
-     config.active_job.queue_adapter = :sidekiq
-     ```
-
-**理由**:
-- Sidekiq は Redis を使用するため、データベース接続設定は不要
-- 環境変数 `REDIS_URL` が設定されていれば自動的に接続する（デフォルト: `redis://localhost:6379/0`）
-
-**コミットメッセージ**: `Switch Active Job adapter from Solid Queue to Sidekiq`
-
-### Phase 5: Sidekiq 初期化ファイルの作成
+### Phase 4: Sidekiq 初期化ファイルの作成
 
 **目的**: Redis 接続設定とログレベルの設定
 
@@ -176,8 +144,25 @@
 - 環境変数 `REDIS_URL` で接続先を切り替え可能にする
 - デフォルト値で開発環境の Docker Compose Redis に接続
 - server/client 両方の設定が必要（server はワーカープロセス、client は Rails アプリケーション）
+- Active Job アダプターの設定より先に作成することで、Rails 起動時のエラーを防ぐ
 
 **コミットメッセージ**: `Add Sidekiq initializer for Redis configuration`
+
+### Phase 5: Active Job アダプターの変更
+
+**目的**: Active Job のバックエンドを Solid Queue から Sidekiq に変更
+
+**変更内容**:
+
+1. `config/environments/development.rb`: Solid Queue の設定（`queue_adapter` と `connects_to`）を削除し、`config.active_job.queue_adapter = :sidekiq` に変更
+2. `config/environments/production.rb`: 同上
+3. `config/environments/test.rb`: `config.active_job.queue_adapter = :inline` を追加
+
+**理由**:
+- Sidekiq は Redis を使用するため、データベース接続設定（`connects_to`）は不要
+- test 環境では `:inline` アダプターを使用し、ジョブを同期実行（高速化、Redis 不要）
+
+**コミットメッセージ**: `Switch Active Job adapter from Solid Queue to Sidekiq`
 
 ### Phase 6: ルーティングの更新
 
@@ -185,26 +170,13 @@
 
 **変更内容**:
 
-1. `config/routes.rb` の変更:
-   - 1行目に以下を追加:
-     ```ruby
-     require "sidekiq/web"
-     ```
-   - 36-37行目を削除:
-     ```ruby
-     # Mission Control - Jobs dashboard (development only)
-     mount MissionControl::Jobs::Engine, at: "/jobs" if Rails.env.development?
-     ```
-   - 以下に置き換え:
-     ```ruby
-     # Sidekiq Web UI (development only)
-     mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
-     ```
+1. `config/routes.rb`:
+   - ファイル先頭に `require "sidekiq/web"` を追加
+   - Mission Control のマウント設定を削除し、`mount Sidekiq::Web => "/sidekiq" if Rails.env.development?` に置き換え
 
 **理由**:
 - Sidekiq Web UI は `/sidekiq` パスにマウント（Sidekiq コミュニティの慣例）
 - 開発環境のみで有効化（本番環境では認証が必要）
-- `require "sidekiq/web"` を先頭に配置してセッション共有を有効化
 
 **コミットメッセージ**: `Replace Mission Control Jobs with Sidekiq Web UI`
 
@@ -229,9 +201,9 @@
      ```
 
 **理由**:
-- Sidekiq は Redis を使用するため、テスト実行時に Redis サービスが必要
+- development/production 環境では Sidekiq が Redis を使用するため、統合テストやシステムテストで Redis が必要になる可能性がある
 - ヘルスチェックにより、Redis が起動してからテストが実行される
-- `REDIS_URL` 環境変数でテスト環境の Redis に接続
+- test 環境では `:inline` アダプターを使用するため実際には Redis に接続しないが、環境変数を設定しておくことで将来的な拡張に対応
 
 **コミットメッセージ**: `Enable Redis service in CI for Sidekiq`
 
@@ -298,94 +270,20 @@
 
 **変更内容**:
 
-1. `README.md` の変更:
-   - 12-16行目の Solid Queue の説明を Sidekiq に変更:
-     ```markdown
-     - **Active Job + Sidekiq**: 記事の予約投稿
-       - [app/jobs/publish_post_job.rb](app/jobs/publish_post_job.rb) - 指定時刻に記事を自動公開
-       - [config/sidekiq.yml](config/sidekiq.yml) - Sidekiq の設定
-       - [config/initializers/sidekiq.rb](config/initializers/sidekiq.rb) - Redis 接続設定
-     ```
+以下のセクションを Solid Queue から Sidekiq に更新:
 
-   - 65-67行目の Mission Control Jobs を Sidekiq Web UI に変更:
-     ```markdown
-     - **Sidekiq Web UI**: Active Job の Web UI 監視ツール
-       - http://localhost:3000/sidekiq で利用可能
-     ```
-
-   - 76-86行目のセットアップ手順を更新:
-     ````markdown
-     1. MySQL と Redis コンテナを起動:
-
-     ```bash
-     docker compose up -d
-     ```
-
-     2. 依存関係のインストール、データベース作成、サーバー起動:
-
-     ```bash
-     bin/setup
-     ```
-     ````
-
-   - 96-100行目のコンテナ管理セクションを更新:
-     ```markdown
-     ### MySQL と Redis コンテナの管理
-
-     - コンテナの起動: `docker compose up -d`
-     - コンテナの停止: `docker compose down`
-     - データの削除（完全リセット）: `docker compose down -v`
-     ```
-
-   - 102-114行目の「Active Job の監視」セクションを更新:
-     ```markdown
-     ## Active Job の監視
-
-     開発環境では、Active Job の実行状況を Web UI で確認できます。
-
-     http://localhost:3000/sidekiq
-
-     Sidekiq Web UI を使用して、以下の情報を確認できます：
-
-     - ジョブの実行履歴
-     - キューの状態（実行中・待機中・完了・失敗・リトライ・スケジュール）
-     - ジョブの詳細情報（引数、実行時間、エラーなど）
-     - 失敗したジョブの手動再試行・削除
-     - Redis の統計情報
-     ```
-
-   - 125-129行目の Solid Queue ERD セクションを削除:
-     ```markdown
-     ### Solid Queue（Active Job）
-
-     [ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/queue_schema.rb)
-
-     Active Job の内部構造（ジョブキュー、実行状態、スケジューリングなど）を確認できます。
-     ```
-
-   - 157-161行目の Solid Trifecta セクションを更新:
-     ```markdown
-     ### Background Jobs
-
-     - [Sidekiq（GitHub）](https://github.com/sidekiq/sidekiq) - Redis ベースの Active Job バックエンド
-     - [Sidekiq Wiki](https://github.com/sidekiq/sidekiq/wiki) - Sidekiq の詳細なドキュメント
-
-     ### Solid Trifecta（Rails 8 の新機能）
-
-     - [Solid Cache（GitHub）](https://github.com/rails/solid_cache) - データベースベースのキャッシュストア（このリポジトリでは未使用）
-     - [Solid Cable（GitHub）](https://github.com/rails/solid_cable) - データベースベースの Action Cable アダプター
-     ```
-
-   - 163-165行目の「その他のツール」セクションから Mission Control Jobs を削除:
-     ```markdown
-     ### その他のツール
-     ```
-     （Mission Control Jobs の行を削除）
+1. **### ブログ機能**: `Active Job + Solid Queue` → `Active Job + Sidekiq`（設定ファイルのリンクも更新）
+2. **### その他の Rails 8 機能**: `Mission Control Jobs` → `Sidekiq Web UI`（URL を `/sidekiq` に変更）
+3. **## セットアップ**: MySQL のみ → MySQL と Redis コンテナを起動
+4. **### MySQL コンテナの管理**: タイトルと説明を「MySQL と Redis」に変更
+5. **## Active Job の監視**: Mission Control の機能説明 → Sidekiq Web UI の機能説明（リトライ・スケジュール・Redis 統計など）
+6. **## データベース構造**: `### Solid Queue（Active Job）` サブセクションを削除
+7. **## 参考資料**: `### Background Jobs` セクションを追加（Sidekiq と Sidekiq Wiki）、Solid Trifecta から Solid Queue を削除
+8. **### その他のツール**: Mission Control Jobs の項目を削除
 
 **理由**:
 - セットアップ手順に Redis の起動を明記
 - ジョブ監視 UI のパスと機能を Sidekiq Web UI 用に更新
-- 参考資料に Sidekiq の公式ドキュメントを追加
 - 不要になった Solid Queue の ERD と Mission Control Jobs の記述を削除
 
 **コミットメッセージ**: `Update README for Sidekiq migration`
@@ -404,8 +302,7 @@
 
 2. Rails サーバーと Sidekiq の起動:
    ```bash
-   bin/rails server
-   bin/sidekiq  # 別のターミナルで実行
+   bin/dev
    ```
 
 3. Sidekiq Web UI へのアクセス:
