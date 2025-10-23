@@ -5,6 +5,18 @@ require "rails/test_help"
 # テスト全体で使用する基準日時
 TEST_BASE_TIME = Time.zone.parse("2025-10-15 10:00:00")
 
+# Workaround for https://github.com/rails/rails/issues/41176
+# Clear all connections before forking to prevent "Bad file descriptor" errors
+# when running parallel tests with MySQL 8.0 on macOS
+module ParallelizeExecutorClearConnections
+  def start
+    ActiveRecord::Base.connection_handler.clear_all_connections!
+    super
+  end
+end
+
+ActiveSupport::Testing::ParallelizeExecutor.prepend(ParallelizeExecutorClearConnections)
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
