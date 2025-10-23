@@ -1,5 +1,15 @@
 # trial-rails8
 
+[![CI](https://github.com/masutaka/trial-rails8/actions/workflows/ci.yml/badge.svg?branch=main)][CI]
+[![CodeQL](https://github.com/masutaka/trial-rails8/actions/workflows/codeql.yml/badge.svg?branch=main)][CodeQL]
+[![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/masutaka/trial-rails8)][CodeRabbit]
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)][DeepWiki]
+
+[CI]: https://github.com/masutaka/trial-rails8/actions/workflows/ci.yml?query=branch%3Amain
+[CodeQL]: https://github.com/masutaka/trial-rails8/actions/workflows/codeql.yml?query=branch%3Amain
+[CodeRabbit]: https://www.coderabbit.ai/
+[DeepWiki]: https://deepwiki.com/masutaka/trial-rails8
+
 Rails 8 の学習用リポジトリです。
 
 ## 機能
