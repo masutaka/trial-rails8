@@ -1,3 +1,5 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
   root "welcome#index"
 
@@ -33,6 +35,6 @@ Rails.application.routes.draw do
 
   get "chat", to: "chat#index"
 
-  # Mission Control - Jobs dashboard (development only)
-  mount MissionControl::Jobs::Engine, at: "/jobs" if Rails.env.development?
+  # Sidekiq Web UI (development only)
+  mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 end
