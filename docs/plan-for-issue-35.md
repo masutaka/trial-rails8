@@ -74,17 +74,21 @@
 
 **変更内容**:
 1. `bin/rails generate controller Users show --no-helper --no-assets`
-2. `test/controllers/users_controller_test.rb` にテストを追加（Red）
+2. `test/routing/users_routing_test.rb` を作成してルーティングテストを追加（Red）
+   - `/users/:username` が `users#show` にルーティングされること
+3. `test/controllers/users_controller_test.rb` にコントローラテストを追加（Red）
    - ユーザーが存在する場合の正常表示
    - ユーザーが存在しない場合の 404 エラー
-3. UsersController#show を実装（Green）
-   - `find_by!` で username 検索
-   - 公開済み投稿を取得
+   - 公開済み投稿が表示されること
+   - 未公開投稿が表示されないこと
 4. `config/routes.rb` にルートを追加:
    ```ruby
    resources :users, only: [:show], param: :username
    ```
-5. テスト実行: `bin/rails test`（全テストが通ることを確認 = Green）
+5. UsersController#show を実装（Green）
+   - `find_by!` で username 検索
+   - 公開済み投稿を取得
+6. テスト実行: `bin/rails test`（全テストが通ることを確認 = Green）
 
 **コミットメッセージ**: `feat: Add UsersController#show with routing`
 

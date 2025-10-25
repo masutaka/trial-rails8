@@ -3,6 +3,8 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   root "welcome#index"
 
+  resources :users, only: [ :show ], param: :username
+
   resource :session
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
