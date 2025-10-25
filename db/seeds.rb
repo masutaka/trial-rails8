@@ -7,11 +7,13 @@ puts "Seeding database..."
 # ユーザーの作成
 puts "Creating users..."
 alice = User.find_or_create_by!(email_address: "alice@example.com") do |user|
+  user.username = "alice"
   user.password = "password"
   user.password_confirmation = "password"
 end
 
 bob = User.find_or_create_by!(email_address: "bob@example.com") do |user|
+  user.username = "bob"
   user.password = "password"
   user.password_confirmation = "password"
 end
