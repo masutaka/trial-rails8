@@ -5,12 +5,12 @@
       <div class="flex items-center space-x-2">
         <div class="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
           <span class="text-sm font-medium text-blue-600">
-            <%= comment.user.email_address[0].upcase %>
+            <%= comment.user.username[0].upcase %>
           </span>
         </div>
         <div>
           <div class="text-sm font-medium text-gray-900">
-            <%= comment.user.email_address %>
+            <%= link_to "@#{comment.user.username}", user_path(comment.user.username), class: "hover:text-blue-600 transition-colors" %>
           </div>
           <div class="text-xs text-gray-500">
             <%= comment.created_at.strftime("%Y年%m月%d日 %H:%M") %>
