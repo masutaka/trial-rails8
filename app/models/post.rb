@@ -77,6 +77,10 @@ class Post < ApplicationRecord
     saved_change_to_published? && published?
   end
 
+  def word_count
+    body&.length || 0
+  end
+
   private
 
   def navigation_scope(current_user)
