@@ -2,23 +2,23 @@
 #
 # Table name: notifications
 #
-#  id         :bigint           not null, primary key
-#  read       :boolean          default(FALSE), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  post_id    :bigint           not null
-#  user_id    :bigint           not null
+#  id              :bigint           not null, primary key
+#  notifiable_type :string(255)      not null
+#  read            :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  notifiable_id   :bigint           not null
+#  user_id         :bigint           not null
 #
 # Indexes
 #
-#  index_notifications_on_post_id                          (post_id)
-#  index_notifications_on_user_id                          (user_id)
-#  index_notifications_on_user_id_and_created_at           (user_id,created_at)
-#  index_notifications_on_user_id_and_read_and_created_at  (user_id,read,created_at)
+#  index_notifications_on_notifiable_type_and_notifiable_id  (notifiable_type,notifiable_id)
+#  index_notifications_on_user_id                            (user_id)
+#  index_notifications_on_user_id_and_created_at             (user_id,created_at)
+#  index_notifications_on_user_id_and_read_and_created_at    (user_id,read,created_at)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (post_id => posts.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 require "test_helper"
@@ -34,14 +34,14 @@ class NotificationTest < ActiveSupport::TestCase
       # 未読通知を作成
       unread_notification = Notification.create!(
         user: @user,
-        post: @post,
+        notifiable: @post,
         read: false
       )
 
       # 既読通知を作成
       read_notification = Notification.create!(
         user: @user,
-        post: @post,
+        notifiable: @post,
         read: true
       )
 
@@ -63,7 +63,7 @@ class NotificationTest < ActiveSupport::TestCase
       travel_to Time.zone.parse("2025-10-17 10:00:00") do
         @old_notification = Notification.create!(
           user: @user,
-          post: @post,
+          notifiable: @post,
           read: false
         )
       end
@@ -71,7 +71,7 @@ class NotificationTest < ActiveSupport::TestCase
       travel_to Time.zone.parse("2025-10-17 11:00:00") do
         @middle_notification = Notification.create!(
           user: @user,
-          post: @post,
+          notifiable: @post,
           read: false
         )
       end
@@ -79,7 +79,7 @@ class NotificationTest < ActiveSupport::TestCase
       travel_to Time.zone.parse("2025-10-17 12:00:00") do
         @new_notification = Notification.create!(
           user: @user,
-          post: @post,
+          notifiable: @post,
           read: false
         )
       end
@@ -96,7 +96,7 @@ class NotificationTest < ActiveSupport::TestCase
       @post = posts(:one)
       @notification = Notification.create!(
         user: @user,
-        post: @post,
+        notifiable: @post,
         read: false
       )
     end
@@ -120,14 +120,14 @@ class NotificationTest < ActiveSupport::TestCase
 
     test "returns unread notification count for specified user" do
       # Alice の未読通知を2件作成
-      Notification.create!(user: @alice, post: @post, read: false)
-      Notification.create!(user: @alice, post: @post, read: false)
+      Notification.create!(user: @alice, notifiable: @post, read: false)
+      Notification.create!(user: @alice, notifiable: @post, read: false)
 
       # Alice の既読通知を1件作成
-      Notification.create!(user: @alice, post: @post, read: true)
+      Notification.create!(user: @alice, notifiable: @post, read: true)
 
       # Bob の未読通知を1件作成
-      Notification.create!(user: @bob, post: @post, read: false)
+      Notification.create!(user: @bob, notifiable: @post, read: false)
 
       # Alice の未読通知数は2件
       assert_equal 2, Notification.unread_count_for(@alice)
@@ -146,12 +146,12 @@ class NotificationTest < ActiveSupport::TestCase
     test "broadcasts Turbo Streams after notification is created" do
       # 通知作成時にブロードキャストが発生してもエラーにならないことを確認
       assert_difference "@user.notifications.count", 1 do
-        Notification.create!(user: @user, post: @post, read: false)
+        Notification.create!(user: @user, notifiable: @post, read: false)
       end
     end
 
     test "broadcasts Turbo Streams after notification is marked as read" do
-      notification = Notification.create!(user: @user, post: @post, read: false)
+      notification = Notification.create!(user: @user, notifiable: @post, read: false)
 
       # 既読にする前は未読
       assert_not notification.read
@@ -164,7 +164,7 @@ class NotificationTest < ActiveSupport::TestCase
     end
 
     test "does not broadcast when read status is not changed" do
-      notification = Notification.create!(user: @user, post: @post, read: false)
+      notification = Notification.create!(user: @user, notifiable: @post, read: false)
 
       # read 以外の属性を更新してもブロードキャストは発生しないはず
       # ただし、created_at は readonly なので別の属性で確認

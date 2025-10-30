@@ -6,8 +6,8 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
       @alice = users(:alice)
       @bob = users(:bob)
       @post = posts(:one)
-      @alice_notification = Notification.create!(user: @alice, post: @post)
-      @bob_notification = Notification.create!(user: @bob, post: @post)
+      @alice_notification = Notification.create!(user: @alice, notifiable: @post)
+      @bob_notification = Notification.create!(user: @bob, notifiable: @post)
     end
 
     test "redirects unauthenticated users" do
@@ -35,9 +35,9 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
       @alice = users(:alice)
       @bob = users(:bob)
       @post = posts(:one)
-      @alice_notification1 = Notification.create!(user: @alice, post: @post)
-      @alice_notification2 = Notification.create!(user: @alice, post: @post)
-      @bob_notification = Notification.create!(user: @bob, post: @post)
+      @alice_notification1 = Notification.create!(user: @alice, notifiable: @post)
+      @alice_notification2 = Notification.create!(user: @alice, notifiable: @post)
+      @bob_notification = Notification.create!(user: @bob, notifiable: @post)
     end
 
     test "redirects unauthenticated users" do

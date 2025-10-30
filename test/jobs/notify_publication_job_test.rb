@@ -11,14 +11,14 @@ class NotifyPublicationJobTest < ActiveJob::TestCase
     end
 
     # 作成者以外のユーザーに通知が作成されること
-    notification = Notification.find_by(post: post, user: other_user)
+    notification = Notification.find_by(notifiable: post, user: other_user)
     assert_not_nil notification
-    assert_equal post.id, notification.post_id
+    assert_equal post.id, notification.notifiable_id
     assert_equal other_user.id, notification.user_id
     assert_equal false, notification.read
 
     # 作成者には通知が作成されないこと
-    author_notification = Notification.find_by(post: post, user: author)
+    author_notification = Notification.find_by(notifiable: post, user: author)
     assert_nil author_notification
   end
 
