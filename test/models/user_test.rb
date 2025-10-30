@@ -85,4 +85,67 @@ class UserTest < ActiveSupport::TestCase
     user.valid?
     assert_equal "testuser", user.username
   end
+
+  # フォロー機能テスト
+
+  test "following 関連付けが正しく動作すること" do
+    user1 = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
+    user2 = User.create!(email_address: "user2@example.com", password: "password", username: "user2")
+    user3 = User.create!(email_address: "user3@example.com", password: "password", username: "user3")
+
+    Follow.create!(follower: user1, followed: user2)
+    Follow.create!(follower: user1, followed: user3)
+
+    assert_equal 2, user1.following.count
+    assert_includes user1.following, user2
+    assert_includes user1.following, user3
+  end
+
+  test "followers 関連付けが正しく動作すること" do
+    user1 = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
+    user2 = User.create!(email_address: "user2@example.com", password: "password", username: "user2")
+    user3 = User.create!(email_address: "user3@example.com", password: "password", username: "user3")
+
+    Follow.create!(follower: user2, followed: user1)
+    Follow.create!(follower: user3, followed: user1)
+
+    assert_equal 2, user1.followers.count
+    assert_includes user1.followers, user2
+    assert_includes user1.followers, user3
+  end
+
+  test "follow メソッドでユーザーをフォローできること" do
+    user1 = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
+    user2 = User.create!(email_address: "user2@example.com", password: "password", username: "user2")
+
+    assert_difference "Follow.count", 1 do
+      user1.follow(user2)
+    end
+
+    assert_includes user1.following, user2
+  end
+
+  test "unfollow メソッドでフォローを解除できること" do
+    user1 = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
+    user2 = User.create!(email_address: "user2@example.com", password: "password", username: "user2")
+
+    user1.follow(user2)
+
+    assert_difference "Follow.count", -1 do
+      user1.unfollow(user2)
+    end
+
+    assert_not_includes user1.following, user2
+  end
+
+  test "following? メソッドでフォロー状態を確認できること" do
+    user1 = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
+    user2 = User.create!(email_address: "user2@example.com", password: "password", username: "user2")
+    user3 = User.create!(email_address: "user3@example.com", password: "password", username: "user3")
+
+    user1.follow(user2)
+
+    assert user1.following?(user2)
+    assert_not user1.following?(user3)
+  end
 end
