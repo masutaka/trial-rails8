@@ -1,7 +1,10 @@
 <% content_for :title, "@#{@user.username}" %>
 
 <div class="mb-8">
-  <h1 class="text-3xl font-bold text-gray-900">@<%= @user.username %></h1>
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold text-gray-900">@<%= @user.username %></h1>
+    <%= render "follows/button", user: @user %>
+  </div>
 </div>
 
 <% if @posts.any? %>

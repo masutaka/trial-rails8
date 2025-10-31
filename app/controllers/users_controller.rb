@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[show]
+  before_action :resume_session, only: %i[show]
 
   def show
     @user = User.find_by!(username: params[:username])

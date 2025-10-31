@@ -4,12 +4,10 @@ class FollowsController < ApplicationController
 
   def create
     Current.user.follow(@user)
-    head :ok
   end
 
   def destroy
     Current.user.unfollow(@user)
-    head :ok
   end
 
   private
