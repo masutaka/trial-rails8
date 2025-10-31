@@ -23,6 +23,13 @@ require "test_helper"
 
 class FollowTest < ActiveSupport::TestCase
   test "should not allow duplicate follow" do
+    # 最初のフォローを作成
+    Follow.create!(
+      follower: users(:alice),
+      followed: users(:bob)
+    )
+
+    # 重複するフォローを作成しようとする
     follow = Follow.new(
       follower: users(:alice),
       followed: users(:bob)

@@ -124,6 +124,16 @@ class UserTest < ActiveSupport::TestCase
       assert_includes user1.following, user2
     end
 
+    test "follow メソッドで自分自身はフォローできないこと" do
+      user = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
+
+      assert_no_difference "Follow.count" do
+        user.follow(user)
+      end
+
+      assert_not_includes user.following, user
+    end
+
     test "unfollow メソッドでフォローを解除できること" do
       user1 = User.create!(email_address: "user1@example.com", password: "password", username: "user1")
       user2 = User.create!(email_address: "user2@example.com", password: "password", username: "user2")

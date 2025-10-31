@@ -37,11 +37,14 @@ class User < ApplicationRecord
 
   # フォロー機能のヘルパーメソッド
   def follow(other_user)
-    following << other_user unless following?(other_user)
+    return if self == other_user # 自分自身はフォローできない
+    return if following?(other_user)
+
+    active_follows.create!(followed: other_user)
   end
 
   def unfollow(other_user)
-    following.delete(other_user)
+    active_follows.find_by(followed: other_user)&.destroy
   end
 
   def following?(other_user)

@@ -1,21 +1,42 @@
 <div class="px-4 py-3 hover:bg-gray-50 transition-colors <%= 'bg-blue-50' unless notification.read %> border-b border-gray-100">
-  <%= link_to post_path(notification.notifiable.slug), class: "block" do %>
-    <div class="flex items-start justify-between">
-      <div class="flex-1">
-        <p class="text-sm font-medium text-gray-900">
-          新しい記事が公開されました
-        </p>
-        <p class="text-sm text-gray-600 mt-1">
-          <%= notification.notifiable.title %>
-        </p>
-        <p class="text-xs text-gray-500 mt-1">
-          <%= time_ago_in_words(notification.created_at) %>前
-        </p>
+  <% if notification.notifiable_type == "Post" %>
+    <%= link_to post_path(notification.notifiable.slug), class: "block" do %>
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-900">
+            新しい記事が公開されました
+          </p>
+          <p class="text-sm text-gray-600 mt-1">
+            <%= notification.notifiable.title %>
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            <%= time_ago_in_words(notification.created_at) %>前
+          </p>
+        </div>
+        <% unless notification.read %>
+          <span class="ml-2 h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></span>
+        <% end %>
       </div>
-      <% unless notification.read %>
-        <span class="ml-2 h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></span>
-      <% end %>
-    </div>
+    <% end %>
+  <% elsif notification.notifiable_type == "Follow" %>
+    <%= link_to user_path(notification.notifiable.follower.username), class: "block" do %>
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-900">
+            新しいフォロワー
+          </p>
+          <p class="text-sm text-gray-600 mt-1">
+            <%= notification.notifiable.follower.username %> さんがあなたをフォローしました
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            <%= time_ago_in_words(notification.created_at) %>前
+          </p>
+        </div>
+        <% unless notification.read %>
+          <span class="ml-2 h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></span>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
   <% unless notification.read %>
     <%= button_to "既読にする", mark_as_read_notification_path(notification.id),

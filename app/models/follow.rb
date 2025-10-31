@@ -23,8 +23,12 @@ class Follow < ApplicationRecord
   belongs_to :follower, class_name: "User"
   belongs_to :followed, class_name: "User"
 
+  has_many :notifications, as: :notifiable, dependent: :destroy
+
   validates :follower_id, uniqueness: { scope: :followed_id }
   validate :not_self_follow
+
+  after_create_commit :create_notification
 
   private
 
@@ -32,5 +36,9 @@ class Follow < ApplicationRecord
     if follower_id == followed_id
       errors.add(:followed_id, "cannot follow yourself")
     end
+  end
+
+  def create_notification
+    Notification.create!(user: followed, notifiable: self, read: false)
   end
 end
