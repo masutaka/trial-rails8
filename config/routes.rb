@@ -5,6 +5,10 @@ Rails.application.routes.draw do
 
   resources :users, only: [ :show ], param: :username do
     resource :follow, only: [ :create, :destroy ]
+    member do
+      get :following
+      get :followers
+    end
   end
 
   resource :session
