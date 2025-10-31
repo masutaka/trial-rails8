@@ -27,7 +27,7 @@ Rails 8 の学習用リポジトリです。
 - **Turbo Drive**: ページ遷移の高速化（アプリケーション全体でデフォルトで有効）
   - [app/javascript/application.js](app/javascript/application.js) - Turbo のインポート
 
-### フォロー機能
+#### フォロー機能
 
 ユーザー間のフォロー・フォロワー機能です。
 
