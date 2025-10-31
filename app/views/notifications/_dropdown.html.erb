@@ -1,5 +1,5 @@
 <% user = local_assigns[:user] || Current.user %>
-<% notifications = user.notifications.includes(:notifiable).recent.limit(20) %>
+<% notifications = user.notifications.includes(notifiable: :follower).recent.limit(20) %>
 <div class="w-80 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
   <div class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
     <h3 class="text-sm font-semibold text-gray-900">通知</h3>
