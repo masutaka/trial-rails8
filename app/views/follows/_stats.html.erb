@@ -1,0 +1,14 @@
+<div id="follow_stats_<%= user.id %>" class="flex gap-6 text-sm text-gray-600">
+  <div>
+    <%= link_to following_user_path(user.username), class: "hover:underline" do %>
+      <span class="font-semibold text-gray-900"><%= user.following.count %></span>
+      <span>フォロー中</span>
+    <% end %>
+  </div>
+  <div>
+    <%= link_to followers_user_path(user.username), class: "hover:underline" do %>
+      <span class="font-semibold text-gray-900"><%= user.followers.count %></span>
+      <span>フォロワー</span>
+    <% end %>
+  </div>
+</div>

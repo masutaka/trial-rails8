@@ -7,7 +7,7 @@ class NotifyPublicationJob < ApplicationJob
 
     # 記事の作成者以外の全ユーザーに通知を作成
     User.where.not(id: post.user_id).find_each do |user|
-      Notification.create!(user: user, post: post, read: false)
+      Notification.create!(user: user, notifiable: post, read: false)
     end
   end
 end

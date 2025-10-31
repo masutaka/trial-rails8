@@ -3,7 +3,13 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   root "welcome#index"
 
-  resources :users, only: [ :show ], param: :username
+  resources :users, only: [ :show ], param: :username do
+    resource :follow, only: [ :create, :destroy ]
+    member do
+      get :following
+      get :followers
+    end
+  end
 
   resource :session
   resources :passwords, param: :token

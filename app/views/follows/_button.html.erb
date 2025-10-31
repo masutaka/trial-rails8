@@ -1,0 +1,15 @@
+<div id="follow_button_<%= user.id %>">
+  <% if Current.user && Current.user != user %>
+    <% if Current.user.following?(user) %>
+      <%= button_to "アンフォロー",
+                    user_follow_path(user_username: user.username),
+                    method: :delete,
+                    class: "px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors" %>
+    <% else %>
+      <%= button_to "フォロー",
+                    user_follow_path(user_username: user.username),
+                    method: :post,
+                    class: "px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors" %>
+    <% end %>
+  <% end %>
+</div>

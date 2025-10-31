@@ -2,28 +2,28 @@
 #
 # Table name: notifications
 #
-#  id         :bigint           not null, primary key
-#  read       :boolean          default(FALSE), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  post_id    :bigint           not null
-#  user_id    :bigint           not null
+#  id              :bigint           not null, primary key
+#  notifiable_type :string(255)      not null
+#  read            :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  notifiable_id   :bigint           not null
+#  user_id         :bigint           not null
 #
 # Indexes
 #
-#  index_notifications_on_post_id                          (post_id)
-#  index_notifications_on_user_id                          (user_id)
-#  index_notifications_on_user_id_and_created_at           (user_id,created_at)
-#  index_notifications_on_user_id_and_read_and_created_at  (user_id,read,created_at)
+#  index_notifications_on_notifiable_type_and_notifiable_id  (notifiable_type,notifiable_id)
+#  index_notifications_on_user_id                            (user_id)
+#  index_notifications_on_user_id_and_created_at             (user_id,created_at)
+#  index_notifications_on_user_id_and_read_and_created_at    (user_id,read,created_at)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (post_id => posts.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class Notification < ApplicationRecord
   belongs_to :user
-  belongs_to :post
+  belongs_to :notifiable, polymorphic: true
 
   scope :unread, -> { where(read: false) }
   scope :recent, -> { order(created_at: :desc) }

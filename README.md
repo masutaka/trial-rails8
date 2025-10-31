@@ -27,6 +27,21 @@ Rails 8 の学習用リポジトリです。
 - **Turbo Drive**: ページ遷移の高速化（アプリケーション全体でデフォルトで有効）
   - [app/javascript/application.js](app/javascript/application.js) - Turbo のインポート
 
+### フォロー機能
+
+ユーザー間のフォロー・フォロワー機能です。
+
+- **自己参照関連（Self-Referential Association）**: ユーザー間の多対多の関係を表現
+  - [app/models/follow.rb](app/models/follow.rb) - Follow モデル（follower_id、followed_id）
+  - [app/models/user.rb](app/models/user.rb) - `has_many :through` による関連付け
+- **Turbo Streams**: フォロー/アンフォローボタンとカウントの非同期更新
+  - [app/controllers/follows_controller.rb](app/controllers/follows_controller.rb) - フォロー/アンフォロー処理
+  - [app/views/follows/create.turbo_stream.erb](app/views/follows/create.turbo_stream.erb) - フォロー時の更新
+  - [app/views/follows/destroy.turbo_stream.erb](app/views/follows/destroy.turbo_stream.erb) - アンフォロー時の更新
+- **Polymorphic Association**: 通知機能の拡張
+  - [app/models/notification.rb](app/models/notification.rb) - `belongs_to :notifiable, polymorphic: true`
+  - [app/views/notifications/_notification.html.erb](app/views/notifications/_notification.html.erb) - フォロー通知の表示
+
 #### コメント機能
 
 ブログ記事へのコメント投稿・編集・削除機能です。

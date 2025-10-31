@@ -18,6 +18,24 @@ bob = User.find_or_create_by!(email_address: "bob@example.com") do |user|
   user.password_confirmation = "password"
 end
 
+carol = User.find_or_create_by!(email_address: "carol@example.com") do |user|
+  user.username = "carol"
+  user.password = "password"
+  user.password_confirmation = "password"
+end
+
+dave = User.find_or_create_by!(email_address: "dave@example.com") do |user|
+  user.username = "dave"
+  user.password = "password"
+  user.password_confirmation = "password"
+end
+
+ellen = User.find_or_create_by!(email_address: "ellen@example.com") do |user|
+  user.username = "ellen"
+  user.password = "password"
+  user.password_confirmation = "password"
+end
+
 # 投稿の作成
 puts "Creating posts..."
 
@@ -107,8 +125,32 @@ Product.find_or_create_by!(name: "商品C") do |product|
   product.inventory_count = 0
 end
 
+# フォロー関係の作成
+puts "Creating follow relationships..."
+
+# Alice が Bob, Carol, Dave をフォロー
+Follow.find_or_create_by!(follower: alice, followed: bob)
+Follow.find_or_create_by!(follower: alice, followed: carol)
+Follow.find_or_create_by!(follower: alice, followed: dave)
+
+# Bob が Alice, Ellen をフォロー
+Follow.find_or_create_by!(follower: bob, followed: alice)
+Follow.find_or_create_by!(follower: bob, followed: ellen)
+
+# Carol が Alice, Dave をフォロー
+Follow.find_or_create_by!(follower: carol, followed: alice)
+Follow.find_or_create_by!(follower: carol, followed: dave)
+
+# Dave が Bob をフォロー
+Follow.find_or_create_by!(follower: dave, followed: bob)
+
+# Ellen が Alice, Carol をフォロー
+Follow.find_or_create_by!(follower: ellen, followed: alice)
+Follow.find_or_create_by!(follower: ellen, followed: carol)
+
 puts "Seeding completed!"
 puts "Users: #{User.count}"
 puts "Posts: #{Post.count}"
 puts "Comments: #{Comment.count}"
 puts "Products: #{Product.count}"
+puts "Follows: #{Follow.count}"
