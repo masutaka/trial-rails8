@@ -28,6 +28,20 @@ module ActiveSupport
     # Include ActiveJob test helpers for job testing
     include ActiveJob::TestHelper
 
+    # Bullet integration for N+1 query detection
+    def before_setup
+      Bullet.start_request if defined?(Bullet)
+      super
+    end
+
+    def after_teardown
+      super
+      if defined?(Bullet)
+        Bullet.perform_out_of_channel_notifications if Bullet.notification?
+        Bullet.end_request
+      end
+    end
+
     # Add more helper methods to be used by all tests here...
   end
 end
