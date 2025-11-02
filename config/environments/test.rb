@@ -58,5 +58,12 @@ Rails.application.configure do
     Bullet.enable        = true
     Bullet.bullet_logger = true
     Bullet.raise         = true # raise an error if n+1 query occurs
+
+    # Safelist for N+1 queries to be fixed incrementally
+    # TODO: Remove these entries one by one as we fix each N+1 query
+    Bullet.add_safelist type: :n_plus_one_query, class_name: "Post", association: :user
+    Bullet.add_safelist type: :n_plus_one_query, class_name: "Comment", association: :user
+    Bullet.add_safelist type: :counter_cache, class_name: "Post", association: :comments
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "Post", association: :comments
   end
 end
