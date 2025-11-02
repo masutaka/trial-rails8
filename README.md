@@ -165,7 +165,7 @@ Action Cable の内部構造（WebSocketメッセージ、チャンネル、ブ�
 #### テスト環境
 
 - **自動検出**: テスト実行時に N+1 クエリが検出され、`log/bullet.log` に記録されます
-- **CI/CD 対応**: N+1 クエリ修正後、`config/environments/test.rb` で `Bullet.raise = true` に変更することで、CI/CD での自動チェックが可能になります
+- **CI/CD 対応**: テスト実行時に N+1 クエリが検出されると、エラーが発生してテストが失敗します（`Bullet.raise = true`）
 
 ## 参考資料
 
