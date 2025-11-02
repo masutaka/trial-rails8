@@ -149,6 +149,24 @@ Sidekiq Web UI を使用して、以下の情報を確認できます：
 
 Action Cable の内部構造（WebSocketメッセージ、チャンネル、ブロードキャストなど）を確認できます。
 
+## パフォーマンス最適化
+
+### N+1 クエリの検出
+
+[Bullet gem](https://github.com/flyerhzm/bullet) を使用して、N+1 クエリを自動検出します。
+
+#### 開発環境
+
+- **ブラウザ通知**: N+1 クエリが検出されると、ブラウザにアラートが表示されます
+- **コンソール出力**: 開発サーバーのコンソールに警告が表示されます
+- **ページフッター**: ページの下部に検出された問題が表示されます
+- **ログファイル**: `log/bullet.log` に詳細なログが記録されます
+
+#### テスト環境
+
+- **自動検出**: テスト実行時に N+1 クエリが検出され、`log/bullet.log` に記録されます
+- **CI/CD 対応**: N+1 クエリ修正後、`config/environments/test.rb` で `Bullet.raise = true` に変更することで、CI/CD での自動チェックが可能になります
+
 ## 参考資料
 
 ### Rails ガイド（日本語）
@@ -179,3 +197,8 @@ Action Cable の内部構造（WebSocketメッセージ、チャンネル、ブ�
 
 - [Sidekiq（GitHub）](https://github.com/sidekiq/sidekiq) - Redis ベースのバックグラウンドジョブ処理
 - [Sidekiq Wiki](https://github.com/sidekiq/sidekiq/wiki) - Sidekiq の詳細なドキュメント
+
+### Performance Optimization
+
+- [Bullet（GitHub）](https://github.com/flyerhzm/bullet) - N+1 クエリの自動検出
+- [Active Record クエリインターフェイス（Rails ガイド）](https://railsguides.jp/active_record_querying.html#%E9%96%A2%E9%80%A3%E4%BB%98%E3%81%91%E3%82%92eager-loading%E3%81%99%E3%82%8B) - Eager Loading の解説
