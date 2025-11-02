@@ -7,7 +7,7 @@ class PostsController < ApplicationController
   # GET /posts
   def index
     resume_session
-    @posts = Post.visible_to(Current.user).order(published_at: :desc)
+    @posts = Post.visible_to(Current.user).includes(:user).order(published_at: :desc)
   end
 
   # GET /posts/1
