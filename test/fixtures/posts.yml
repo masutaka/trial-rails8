@@ -4,15 +4,16 @@
 #
 # Table name: posts
 #
-#  id           :bigint           not null, primary key
-#  body         :text(65535)
-#  published    :boolean          default(FALSE), not null
-#  published_at :datetime
-#  slug         :string(255)
-#  title        :string(255)
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  user_id      :bigint           not null
+#  id             :bigint           not null, primary key
+#  body           :text(65535)
+#  comments_count :integer          default(0), not null
+#  published      :boolean          default(FALSE), not null
+#  published_at   :datetime
+#  slug           :string(255)
+#  title          :string(255)
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  user_id        :bigint           not null
 #
 # Indexes
 #
