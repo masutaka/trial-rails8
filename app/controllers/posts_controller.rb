@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
-  before_action :set_post, only: %i[ show edit update destroy ]
+  before_action :set_post, only: %i[ edit update destroy ]
+  before_action :set_post_with_comments, only: %i[ show ]
   before_action :authorize_author, only: %i[ edit update destroy ]
   before_action :normalize_published_at, only: %i[ create update ]
 
@@ -59,6 +60,10 @@ class PostsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_post
       @post = Post.find_by!(slug: params.expect(:slug))
+    end
+
+    def set_post_with_comments
+      @post = Post.includes(comments: :user).find_by!(slug: params.expect(:slug))
     end
 
     # Check if the current user is the author of the post

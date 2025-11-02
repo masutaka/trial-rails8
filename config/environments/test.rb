@@ -61,7 +61,6 @@ Rails.application.configure do
 
     # Safelist for N+1 queries to be fixed incrementally
     # TODO: Remove these entries one by one as we fix each N+1 query
-    Bullet.add_safelist type: :n_plus_one_query, class_name: "Comment", association: :user
     Bullet.add_safelist type: :counter_cache, class_name: "Post", association: :comments
   end
 end
