@@ -53,4 +53,10 @@ Rails.application.configure do
 
   # Use test adapter for Active Job in test environment.
   config.active_job.queue_adapter = :test
+
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.bullet_logger = true
+    Bullet.raise         = false # TODO: Enable after fixing existing N+1 queries
+  end
 end
