@@ -64,6 +64,5 @@ Rails.application.configure do
     Bullet.add_safelist type: :n_plus_one_query, class_name: "Post", association: :user
     Bullet.add_safelist type: :n_plus_one_query, class_name: "Comment", association: :user
     Bullet.add_safelist type: :counter_cache, class_name: "Post", association: :comments
-    Bullet.add_safelist type: :unused_eager_loading, class_name: "Post", association: :comments
   end
 end
