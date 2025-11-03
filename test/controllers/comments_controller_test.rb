@@ -15,7 +15,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "should create comment when logged in" do
     log_in_as(@alice)
     assert_difference("Comment.count") do
-      post post_comments_url(@post), params: { comment: { body: "新しいコメントです。" } }
+      post post_comments_url(@post), params: { comment: { body: "新しいコメントです。" } }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
     end
 
     assert_response :ok
@@ -34,7 +34,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "should not create comment with invalid params" do
     log_in_as(@alice)
     assert_no_difference("Comment.count") do
-      post post_comments_url(@post), params: { comment: { body: "" } }
+      post post_comments_url(@post), params: { comment: { body: "" } }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
     end
 
     assert_response :unprocessable_entity

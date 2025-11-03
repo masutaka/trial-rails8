@@ -9,11 +9,12 @@ class CommentsController < ApplicationController
     @comment = @post.comments.build(comment_params)
     @comment.user = Current.user
 
-    if @comment.save
-      render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post })
-    else
-      render turbo_stream: turbo_stream.replace("new_comment", partial: "comments/new_comment_form", locals: { post: @post, comment: @comment }),
-             status: :unprocessable_entity
+    respond_to do |format|
+      if @comment.save
+        format.turbo_stream
+      else
+        format.turbo_stream { render :create, status: :unprocessable_entity }
+      end
     end
   end
 
