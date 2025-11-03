@@ -11,6 +11,7 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       if @comment.save
+        @comment = @post.comments.build
         format.turbo_stream
       else
         format.turbo_stream { render :create, status: :unprocessable_entity }

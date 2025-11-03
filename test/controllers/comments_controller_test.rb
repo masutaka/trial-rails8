@@ -23,6 +23,15 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_match /<turbo-stream action="replace" target="new_comment">/, response.body
   end
 
+  test "should reset form after successful comment creation" do
+    log_in_as(@alice)
+    post post_comments_url(@post), params: { comment: { body: "新しいコメントです。" } }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :ok
+    # フォームのテキストエリアが空であることを確認
+    assert_select "textarea[name=?]", "comment[body]", text: ""
+  end
+
   test "should not create comment when not logged in" do
     assert_no_difference("Comment.count") do
       post post_comments_url(@post), params: { comment: { body: "新しいコメントです。" } }
