@@ -2,8 +2,8 @@ services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: trial_rails8_development
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-trial_rails8_development}
     ports:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
