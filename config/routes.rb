@@ -1,5 +1,3 @@
-require "sidekiq/web"
-
 Rails.application.routes.draw do
   root "welcome#index"
 
@@ -42,5 +40,7 @@ Rails.application.routes.draw do
 
   # システム
   get "up" => "rails/health#show", as: :rails_health_check
-  mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
+
+  # Mission Control - Jobs dashboard (development only)
+  mount MissionControl::Jobs::Engine, at: "/jobs" if Rails.env.development?
 end

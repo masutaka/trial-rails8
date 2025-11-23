@@ -20,10 +20,10 @@ Rails 8 の学習用リポジトリです。
 
 記事の作成・編集・削除、予約投稿が可能なブログシステムです。
 
-- **Active Job + Sidekiq**: 記事の予約投稿
+- **Active Job + Solid Queue**: 記事の予約投稿
   - [app/jobs/publish_post_job.rb](app/jobs/publish_post_job.rb) - 指定時刻に記事を自動公開
-  - [config/sidekiq.yml](config/sidekiq.yml) - Sidekiq の設定
-  - [config/initializers/sidekiq.rb](config/initializers/sidekiq.rb) - Redis 接続設定
+  - [config/queue.yml](config/queue.yml) - ジョブキューの設定
+  - [config/environments/production.rb](config/environments/production.rb) - Solid Queue の設定
 - **Turbo Drive**: ページ遷移の高速化（アプリケーション全体でデフォルトで有効）
   - [app/javascript/application.js](app/javascript/application.js) - Turbo のインポート
 
@@ -93,7 +93,7 @@ WebSocket を使ったリアルタイムチャット機能です。
 
 ### 手順
 
-1. MySQL と Redis コンテナを起動:
+1. MySQL コンテナを起動:
 
 ```bash
 docker compose up -d
@@ -113,7 +113,7 @@ bin/rails db:seed
 
 http://localhost:3000 から、アプリケーションにアクセスできます。
 
-### MySQL と Redis コンテナの管理
+### MySQL コンテナの管理
 
 - コンテナの起動: `docker compose up -d`
 - コンテナの停止: `docker compose down`
@@ -123,15 +123,14 @@ http://localhost:3000 から、アプリケーションにアクセスできま�
 
 開発環境では、Active Job の実行状況を Web UI で確認できます。
 
-http://localhost:3000/sidekiq
+http://localhost:3000/jobs
 
-Sidekiq Web UI を使用して、以下の情報を確認できます：
+Mission Control Jobs を使用して、以下の情報を確認できます：
 
-- ジョブの実行状態（処理中・キュー待ち・リトライ・スケジュール済み・完了・失敗）
-- キューのリアルタイム統計（処理済み・失敗・リトライ数）
-- Redis の接続情報とメモリ使用量
-- 失敗したジョブの手動リトライ
-- スケジュールされたジョブの確認
+- ジョブの実行履歴
+- キューの状態（実行中・待機中・完了・失敗）
+- ジョブの詳細情報（引数、実行時間、エラーなど）
+- 失敗したジョブの手動再試行
 
 ## データベース構造
 
@@ -142,6 +141,12 @@ Sidekiq Web UI を使用して、以下の情報を確認できます：
 [ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/schema.rb)
 
 アプリケーションのコアテーブル（users、posts、comments など）の構造とリレーションシップを確認できます。
+
+### Solid Queue（Active Job）
+
+[ERDを表示](https://liambx.com/erd/p/github.com/masutaka/trial-rails8/blob/main/db/queue_schema.rb)
+
+Active Job の内部構造（ジョブキュー、実行状態、スケジューリングなど）を確認できます。
 
 ### Solid Cable（Action Cable）
 
@@ -189,14 +194,13 @@ Action Cable の内部構造（WebSocketメッセージ、チャンネル、ブ�
 
 ### Solid Trifecta（Rails 8 の新機能）
 
-- [Solid Queue（GitHub）](https://github.com/rails/solid_queue) - データベースベースの Active Job バックエンド（このリポジトリでは未使用）
+- [Solid Queue（GitHub）](https://github.com/rails/solid_queue) - データベースベースの Active Job バックエンド
 - [Solid Cache（GitHub）](https://github.com/rails/solid_cache) - データベースベースのキャッシュストア（このリポジトリでは未使用）
 - [Solid Cable（GitHub）](https://github.com/rails/solid_cable) - データベースベースの Action Cable アダプター
 
-### Background Jobs
+### その他のツール
 
-- [Sidekiq（GitHub）](https://github.com/sidekiq/sidekiq) - Redis ベースのバックグラウンドジョブ処理
-- [Sidekiq Wiki](https://github.com/sidekiq/sidekiq/wiki) - Sidekiq の詳細なドキュメント
+- [Mission Control Jobs（GitHub）](https://github.com/rails/mission_control-jobs) - Active Job の監視ツール
 
 ### Performance Optimization
 
