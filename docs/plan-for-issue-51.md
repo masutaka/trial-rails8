@@ -7,17 +7,17 @@ MySQL接続設定を環境変数で設定可能にし、開発環境でのポー
 **実装内容**:
 - dotenv-rails gem を導入し、`.env` ファイルで環境変数を管理
 - docker compose と Rails で同じ `.env` ファイルを使用
-- デフォルト値を提供し、CI やテストへの影響を回避
+- `.env.example` をコピーして `.env` を作成する方式
 
 ## 設計上の決定事項
 
-### 環境変数とデフォルト値
+### 環境変数
 
-`ENV.fetch` でデフォルト値を提供し、環境変数未設定でも動作する:
-- `MYSQL_HOST`: `127.0.0.1`
-- `MYSQL_PORT`: `3306`
-- `MYSQL_USERNAME`: `root`
-- `MYSQL_PASSWORD`: `password`
+`.env` ファイルで以下の環境変数を定義:
+- `MYSQL_HOST`: MySQL のホスト名
+- `MYSQL_PORT`: MySQL のポート番号
+- `MYSQL_USERNAME`: MySQL のユーザー名
+- `MYSQL_PASSWORD`: MySQL のパスワード
 
 ### dotenv-rails の導入
 
@@ -48,28 +48,35 @@ docker compose と Rails の両方で `.env` ファイルを読み込み、1つ�
 
 ### Phase 3: compose.yml の環境変数対応
 
-1. `compose.yml` の `db` サービスの `ports` を `"${MYSQL_PORT:-3306}:3306"` に変更
+1. `compose.yml` の `db` サービスを環境変数対応に変更:
+   - `MYSQL_ROOT_PASSWORD`: `${MYSQL_PASSWORD}`
+   - `ports`: `"${MYSQL_PORT}:3306"`
 2. `docker compose up -d` で MySQL が起動することを確認
 
-**コミットメッセージ**: `feat: Support MYSQL_PORT environment variable in compose.yml`
+**コミットメッセージ**: `feat: Support environment variables in compose.yml`
 
 ### Phase 4: database.yml の環境変数対応
 
 1. `config/database.yml` の `default` セクションを更新:
-   - `host`: `<%= ENV.fetch("MYSQL_HOST", "127.0.0.1") %>`
-   - `port`: `<%= ENV.fetch("MYSQL_PORT", "3306") %>`
-   - `username`: `<%= ENV.fetch("MYSQL_USERNAME", "root") %>`
-   - `password`: `<%= ENV.fetch("MYSQL_PASSWORD", "password") %>`
+   - `host`: `<%= ENV["MYSQL_HOST"] %>`
+   - `port`: `<%= ENV["MYSQL_PORT"] %>`
+   - `username`: `<%= ENV["MYSQL_USERNAME"] %>`
+   - `password`: `<%= ENV["MYSQL_PASSWORD"] %>`
 2. `bin/rails db:migrate:status` で動作確認
 3. `bin/rails test` で全テストが通ることを確認
 
 **コミットメッセージ**: `feat: Support environment variables for MySQL connection settings`
 
-### Phase 5: CI の動作確認
+### Phase 5: CI の環境変数設定
 
-1. CI で `bin/rails test` が通ることを確認（デフォルト値で動作）
+1. GitHub Actions の設定ファイルに環境変数を追加:
+   - `MYSQL_HOST: 127.0.0.1`
+   - `MYSQL_PORT: 3306`
+   - `MYSQL_USERNAME: root`
+   - `MYSQL_PASSWORD: password`
+2. CI で `bin/rails test` が通ることを確認
 
-**注意**: CI の設定変更が不要な場合、コミットを作成しない
+**コミットメッセージ**: `ci: Add MySQL environment variables for CI`
 
 ### Phase 6: README.md の更新
 
@@ -84,7 +91,7 @@ docker compose と Rails の両方で `.env` ファイルを読み込み、1つ�
 - [ ] dotenv-rails gem がインストールされていること
 - [ ] `.env.example` にMySQL接続情報の環境変数が記載されていること
 - [ ] `compose.yml` と `database.yml` で環境変数を使用していること
-- [ ] 環境変数未設定時、デフォルト値で動作すること
+- [ ] `.env` ファイルを作成すれば動作すること
 - [ ] 既存のテストとCIが通ること
 - [ ] README.md に `.env` のカスタマイズ方法が追加されていること
 
