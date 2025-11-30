@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: products
+# Database name: primary
 #
 #  id              :bigint           not null, primary key
 #  inventory_count :integer
