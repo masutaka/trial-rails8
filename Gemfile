@@ -58,6 +58,9 @@ group :development, :test do
 
   # N+1 query detection [https://github.com/flyerhzm/bullet]
   gem "bullet"
+
+  # Load environment variables from .env file [https://github.com/bkeepers/dotenv]
+  gem "dotenv-rails"
 end
 
 group :development do
