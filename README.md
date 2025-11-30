@@ -10,11 +10,11 @@
 [CodeRabbit]: https://www.coderabbit.ai/
 [DeepWiki]: https://deepwiki.com/masutaka/trial-rails8
 
-Rails 8 の学習用リポジトリです。
+Rails 8.1 の学習用リポジトリです。
 
 ## 機能
 
-このリポジトリは **Rails 8** の主要機能を学習するために作成されています。
+このリポジトリは **Rails 8.1** の主要機能を学習するために作成されています。
 
 ### ブログ機能
 
