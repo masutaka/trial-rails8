@@ -63,9 +63,9 @@ jobs:
       mysql:
         image: mysql:8.0
         ports:
-          - 3306:3306
+          - 3306:3306  # Must match MYSQL_PORT in test step
         env:
-          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: password  # Must match MYSQL_PASSWORD in test step
         options: --health-cmd "mysqladmin ping -h localhost" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Install packages
@@ -83,6 +83,10 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: 3306  # Must match port mapping in services
+          MYSQL_USERNAME: root
+          MYSQL_PASSWORD: password  # Must match MYSQL_ROOT_PASSWORD in services
         run: bin/rails db:test:prepare test test:system
 
       - name: Keep screenshots from failed system tests
