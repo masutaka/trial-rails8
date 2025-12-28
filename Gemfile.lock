@@ -412,21 +412,21 @@ PLATFORMS
 
 DEPENDENCIES
   annotaterb
-  bcrypt (~> 3.1.7)
+  bcrypt
   bootsnap
   brakeman
   bullet
   capybara
   debug
   dotenv-rails
-  image_processing (~> 1.2)
+  image_processing
   importmap-rails
   jbuilder
   kamal
   mission_control-jobs
-  mysql2 (~> 0.5)
+  mysql2
   propshaft
-  puma (>= 5.0)
+  puma
   rails (~> 8.1.0)
   redcarpet
   rubocop-rails-omakase
