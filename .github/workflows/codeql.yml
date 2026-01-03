@@ -3,12 +3,21 @@ name: CodeQL
 on:
   push:
 
-permissions:
-  actions: read
-  checks: read
-  contents: read
-  security-events: write
-
 jobs:
   codeql:
     uses: masutaka/actions/.github/workflows/codeql.yml@main
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      security-events: write
+  pushover:
+    name: pushover if failure
+    if: github.ref_name == github.event.repository.default_branch && failure()
+    needs: [codeql]
+    uses: masutaka/actions/.github/workflows/pushover.yml@main
+    permissions:
+      contents: read
+    secrets:
+      PUSHOVER_API_KEY: ${{ secrets.PUSHOVER_API_KEY }}
+      PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
