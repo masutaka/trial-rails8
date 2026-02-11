@@ -88,7 +88,7 @@ GEM
     bindex (0.8.1)
     bootsnap (1.21.1)
       msgpack (~> 1.2)
-    brakeman (7.1.2)
+    brakeman (8.0.2)
       racc
     builder (3.3.0)
     bullet (8.1.0)
@@ -443,7 +443,7 @@ DEPENDENCIES
   web-console
 
 RUBY VERSION
-   ruby 4.0.0p0
+  ruby 4.0.0p0
 
 BUNDLED WITH
-   4.0.3
+  4.0.3
