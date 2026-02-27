@@ -1,5 +1,7 @@
 # trial-rails8
 
+check
+
 [![CI](https://github.com/masutaka/trial-rails8/actions/workflows/ci.yml/badge.svg?branch=main)][CI]
 [![CodeQL](https://github.com/masutaka/trial-rails8/actions/workflows/codeql.yml/badge.svg?branch=main)][CodeQL]
 [![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/masutaka/trial-rails8)][CodeRabbit]
