@@ -2,17 +2,31 @@ name: CI
 
 on:
   pull_request:
-    paths-ignore:
-      - README.md
-      - 'docs/**'
   push:
     branches: [main]
-    paths-ignore:
-      - README.md
-      - 'docs/**'
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: filter
+        with:
+          filters: |
+            code:
+              - '**'
+              - '!README.md'
+              - '!docs/**'
+
   scan_ruby:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -31,6 +45,8 @@ jobs:
         run: bin/brakeman --no-pager
 
   scan_js:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -49,6 +65,8 @@ jobs:
         run: bin/importmap audit
 
   lint:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-slim
     permissions:
       contents: read
@@ -66,6 +84,8 @@ jobs:
         run: bin/rubocop -f github
 
   test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -107,7 +127,7 @@ jobs:
   pushover:
     name: pushover if failure
     if: github.ref_name == github.event.repository.default_branch && failure()
-    needs: [scan_ruby, scan_js, lint, test]
+    needs: [changes, scan_ruby, scan_js, lint, test]
     uses: masutaka/actions/.github/workflows/pushover.yml@main
     permissions:
       contents: read
