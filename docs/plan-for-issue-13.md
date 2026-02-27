@@ -1,5 +1,7 @@
 # Issue #13: 通知機能
 
+testtest
+
 ## 概要
 
 - **IssueURL**: https://github.com/masutaka/trial-rails8/issues/13
