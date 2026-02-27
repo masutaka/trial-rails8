@@ -11,22 +11,23 @@ jobs:
     permissions:
       contents: read
     outputs:
-      docs_only: ${{ steps.filter.outputs.docs_only }}
+      src: ${{ steps.filter.outputs.src }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+      - uses: dorny/paths-filter@668c092af3649c4b664c54e4b704aa46782f6f7c # v3
         id: filter
         with:
           predicate-quantifier: every
           filters: |
-            docs_only:
-              - 'README.md'
-              - 'docs/**'
+            src:
+              - '**'
+              - '!README.md'
+              - '!docs/**'
 
   scan_ruby:
     needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
+    if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,7 +47,7 @@ jobs:
 
   scan_js:
     needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
+    if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -66,7 +67,7 @@ jobs:
 
   lint:
     needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
+    if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-slim
     permissions:
       contents: read
@@ -85,7 +86,7 @@ jobs:
 
   test:
     needs: changes
-    if: needs.changes.outputs.docs_only != 'true'
+    if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
