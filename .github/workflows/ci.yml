@@ -29,6 +29,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
 
@@ -49,6 +50,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
 
@@ -69,6 +71,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-slim
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
@@ -88,6 +91,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
 
