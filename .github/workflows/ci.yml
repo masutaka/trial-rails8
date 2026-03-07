@@ -88,6 +88,16 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+  codeql:
+    needs: changes
+    if: needs.changes.outputs.src == 'true'
+    uses: masutaka/actions/.github/workflows/codeql.yml@main
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      security-events: write
+
   test:
     needs: changes
     if: needs.changes.outputs.src == 'true'
@@ -133,7 +143,7 @@ jobs:
   pushover:
     name: pushover if failure
     if: github.ref_name == github.event.repository.default_branch && failure()
-    needs: [changes, scan_ruby, scan_js, lint, test]
+    needs: [changes, scan_ruby, scan_js, lint, codeql, test]
     uses: masutaka/actions/.github/workflows/pushover.yml@main
     permissions:
       contents: read
