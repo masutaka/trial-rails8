@@ -89,8 +89,6 @@ jobs:
         run: bin/rubocop -f github
 
   codeql:
-    needs: changes
-    if: needs.changes.outputs.src == 'true'
     uses: masutaka/actions/.github/workflows/codeql.yml@main
     permissions:
       actions: read
