@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: dorny/paths-filter@668c092af3649c4b664c54e4b704aa46782f6f7c # v3
+      - uses: dorny/paths-filter@9d7afb8d214ad99e78fbd4247752c4caed2b6e4c # v3
         id: filter
         with:
           predicate-quantifier: every
