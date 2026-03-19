@@ -41,7 +41,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd # v1.288.0
         with:
-          ruby-version: .ruby-version
+          ruby-version: .tool-versions
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
@@ -62,7 +62,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd # v1.288.0
         with:
-          ruby-version: .ruby-version
+          ruby-version: .tool-versions
           bundler-cache: true
 
       - name: Scan for security vulnerabilities in JavaScript dependencies
@@ -82,7 +82,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd # v1.288.0
         with:
-          ruby-version: .ruby-version
+          ruby-version: .tool-versions
           bundler-cache: true
 
       - name: Lint code for consistent style
@@ -122,7 +122,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd # v1.288.0
         with:
-          ruby-version: .ruby-version
+          ruby-version: .tool-versions
           bundler-cache: true
 
       - name: Run tests
