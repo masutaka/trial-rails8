@@ -5,6 +5,7 @@ version: 2
 updates:
   - package-ecosystem: bundler
     directory: "/"
+    open-pull-requests-limit: 0
     schedule:
       interval: weekly
       day: friday
@@ -12,6 +13,7 @@ updates:
       default-days: 7
   - package-ecosystem: github-actions
     directory: "/"
+    open-pull-requests-limit: 99
     schedule:
       interval: weekly
       day: friday
