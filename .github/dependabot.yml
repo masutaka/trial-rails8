@@ -15,7 +15,8 @@ updates:
     directory: "/"
     open-pull-requests-limit: 99
     schedule:
-      interval: weekly
-      day: friday
+      interval: monthly
+      time: "19:00"
+      timezone: "Asia/Tokyo"
     cooldown:
       default-days: 7
