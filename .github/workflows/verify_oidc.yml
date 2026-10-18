@@ -1,0 +1,28 @@
+# 一時的な検証用。https://github.com/masutaka/general/issues/50
+# Dependabot がトリガーした pull_request で id-token: write が有効になるかを確かめる。
+# トークンそのものはログに出さず、claims だけを出す。
+
+name: Verify OIDC
+
+on: [pull_request]
+
+jobs:
+  verify-oidc:
+    runs-on: ubuntu-slim
+    timeout-minutes: 1
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Print OIDC claims
+        run: |
+          echo "actor=${GITHUB_ACTOR}"
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "::error::ACTIONS_ID_TOKEN_REQUEST_URL is not set"
+            exit 1
+          fi
+          token=$(curl -sSf -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https://api.anthropic.com" | jq -r .value)
+          echo "::add-mask::${token}"
+          payload=$(echo "${token}" | cut -d. -f2 | tr '_-' '/+')
+          while [ $(( ${#payload} % 4 )) -ne 0 ]; do payload="${payload}="; done
+          echo "${payload}" | base64 -d | jq '{sub, aud, actor, event_name, ref, repository, repository_owner, job_workflow_ref}'
