@@ -1,5 +1,5 @@
 # 一時的な検証用。https://github.com/masutaka/general/issues/50
-# Dependabot がトリガーした pull_request で id-token: write が有効になるかを確かめる。
+# Dependabot がトリガーした pull_request で id-token: write と pull-requests: write が有効になるかを確かめる。
 # トークンそのものはログに出さず、claims だけを出す。
 
 name: Verify OIDC
@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 1
     permissions:
       id-token: write
+      pull-requests: write
 
     steps:
       - name: Print OIDC claims
@@ -26,3 +27,10 @@ jobs:
           payload=$(echo "${token}" | cut -d. -f2 | tr '_-' '/+')
           while [ $(( ${#payload} % 4 )) -ne 0 ]; do payload="${payload}="; done
           echo "${payload}" | base64 -d | jq '{sub, aud, actor, event_name, ref, repository, repository_owner, job_workflow_ref}'
+      - name: Post PR comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr comment "${PR_NUMBER}" --body "Verify OIDC: pull-requests: write で投稿できることの確認（https://github.com/masutaka/general/issues/50）"
